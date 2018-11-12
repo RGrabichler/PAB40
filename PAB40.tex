@@ -57,8 +57,42 @@ Inhaltsverzeichniss:
 
 			angeshclossen über ProfibusDP
 	
-		
 	
+	2.3.1  Verwendetes IR Messgerät
+		Im beschriebenen Messsytem wird das CT laser LT System von optris benutzt.  
+		Vorteile sind sehr kleine Messflecken, ein Doppel-Laservisier zur Messfeldmarkierung und eine 75:1 Optik Scharfeinstellung. Die Reaktionszeit 
+		beträgt 9 ms und ist damit hervorragend für schnelle Qualitiätsmessungen geeignet. Die Anbindung an die SPS  erfolgt über einen 4-20mA Analogausgang, 
+		diverse Feldbus Ansteuerungen sind zusätlzich möglich, im vorliegenden Fall aber nicht benutzt. Weitere Parameter sind:
+		-Scharfpunkt Einstellung bei CF2 Modell : 1.9mm @ 150mm
+		- Sytemgenauigkeit +- 1%
+		- Emissionsgrad 0.1 - 1.1
+		Transmissionsgrad 0.1 - 1.0
+		-Signalverarbeitung mit MAX-, Minwerthaltu ng, Mittelwert, Hysterese
+		-Visierlaser mit 1mW, Wellenlänge 635nm
+		
+	2.3.2 Temperaturskompensation über Polynom
+		Grundsätölzich dient das IR Gerät nicht als eigensätniges QS System, sondern als 
+		Hilfsmittel, womit der Widerstand der SPule bestimmmt werden kann. Verschiedene Temperaturen des Kupferdrahts 
+		äußern sich in abweichenden Widerständen, bezogen auf 20Grad. Problem ist jedoch, dass die Temepraturverteilung nicht
+		homogen ist, und somit nicht einfach die Temp. des Kupfers ermittel werden kann. Dadurch kann mit dem Temperaturkoeffizienten (0.00393) von Kupferdrahts
+		nicht einfach der Widerstand ermittelt werden. 
+		Abhilfe schafft ein Verfahren zur Bestimmung eines AUsgleichspolynoms, dass zu ermittelten Prüfwerten
+		ein Poylnom liefert. Das ermitteln dieser Werte wird in einem eigenem Prüfprogramm erledigt. Dazu wird eine umspirtzte Spule in die Prüfanlage gefahren.
+		Im Zyklus von 5s wird jeweils ein Wertepaar, bestehend aus Temp und WIderstand ermittelt und in eine Tabelle geschrieben.
+		Das Polynom wird mit der mathematischen Verfahren "Methode der kleinsten Quadrate" bestiummmt.
+		Ein extra dafür erstelltes Python Skript liest aus der Excel Datei die zuvor ermittelten Wertepaare aus und 
+		berechnet automatisch die passenden KOeffizienten. Im folgenden Abschnitt wird kurz auf das Skript eingegangen.
+	
+		Das Modul openpyxl ist eine Bibliothek, die das Lesen und Schreiben in Excel Dateien erlaubt.
+		Mit dem Befehl py.load_workbook... in Zeile 23 wird die Excel mappe geladen und der Variable wb für WOrkbook zugewiesen.
+		In der FOr Schleife ziwcshen den Zeilen 77 und 92 ewrden die Werte für den Widerstand und die Temperatur eingelesen. 
+		Mit der Zeile 101 wird aus jedem berechneten Mittelwert ein Temperaturkoeffizient gebildet. Mittels Temperatur und Koeffizient können
+		die Polynomparameter ermittelt werden. Die Codezeile 136 zeigt den erforderlichen Befehl Polyfit(x[i], y[i], degree) aus der Lib numpy. 
+		Die Ausgabe erfolgt in der Python Shell und produziert folgende Werte für ein Polynom 4ter Ordnung:
+		\image Poly
+		Der Vergliech mit dem WIderstandswert bei 20grad (29.28) ergibt eine max. Abweichung von 0.22 Ohm. 
+		Im Serienbetrieb kann aufgrund dieser ermittelten Polynomparameter die Steuerung die Spulen mit unterschiedl8ichen WIderstandswerten 
+		eine sichere Prüfung, bezogen auf 20 Grad, gewährleisten. Somit sind die Werte aussagekräftig undv vergleichbar.
 	
 3, Problematik, Fehlerauswertung
 
