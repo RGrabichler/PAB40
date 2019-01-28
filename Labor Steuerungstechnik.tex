@@ -1,0 +1,262 @@
+\documentclass[12pt,a4paper]{scrartcl}	% siehe <http://www.komascript.de>
+\usepackage{selinput}		% Eingabecodierung automatisch ermitteln …
+\SelectInputMappings{		% … siehe <http://ctan.org/pkg/selinput>
+	adieresis={ä},
+	germandbls={ß},
+}
+\usepackage[left=2.5cm,right=2cm, top=3cm, bottom=3cm]{geometry} %Maße Papier
+\usepackage[ngerman]{babel}% Das Beispieldokument ist in Deutsch,
+\usepackage[T1]{fontenc}   %erweitert Zeichenvorrat bei non E/US
+\usepackage{lmodern} 		%latein moderne Schriftzeichen
+\usepackage{amsmath}		%Mathe Bundle
+\usepackage{xcolor,graphicx}
+\usepackage[onehalfspacing]{setspace} %ermöglicht Zeilenabstand von 1.5 
+\usepackage[%
+automark,
+headsepline,                %% Separation line below the header
+%  footsepline,               %% Separation line above the footer
+% markuppercase
+]{scrpage2}						%entspricht fanyhdr für KOMA, 
+\automark[subsection]{section} %
+\pagestyle{scrheadings}			%mit scrartcl und unterstrichenen Sections oben
+\usepackage{csquotes}
+
+
+
+\usepackage[backend=biber,style=authoryear,dashed=false]{biblatex}
+\addbibresource{Literatur.bib}
+\usepackage[pdftex]{hyperref} %muss letzte vor begin document sein
+\hypersetup{colorlinks,%
+	citecolor=black,%
+	filecolor=black,%
+	linkcolor=black,%
+	urlcolor=black,%
+}
+
+\begin{document}
+\begin{titlepage}
+%\frontmatter
+	\noindent{Roman Grabichler}\\
+	Immatrikulationsnummer:	2932203\\
+	Sonnenstr. 22\\
+	83043 Bad Aibling\\
+	RoGrStudium@gmail.com\\
+	\vspace{5cm}
+	
+	\begin{center}
+		{\Huge \textbf{Assignment} }\\ 
+		Modul: STT20\\
+		\vspace{1cm}
+		\textbf{Thema:}\\
+		\textbf{\large{Labor Steuerungstechnik}}\\
+		Beschreibung des Programms "'X\_POS"'
+	\end{center}
+	
+	\vspace{6cm}
+	Betreuer: Herr Konrad Knorrek
+	\vfill Bad Aibling, 15.03 März 2017
+
+\end{titlepage}
+\newpage
+
+\clearpage
+\thispagestyle{empty}
+
+\tableofcontents
+\newpage
+\clearpage
+\thispagestyle{empty}
+\listoffigures
+\newpage
+%\listoftables
+%\newpage
+
+\setcounter{page}{1}
+\section{Einleitung}
+\subsection{Automatisierungstechnik}
+Spätestens mit den Anfängen der Industriellen Revolution im 18. Jahrhundert in England und später auch in Deutschland wurden Wege ersonnen, die Produktion zu steigern, sowie gleichzeitig billiger und fehlerfreier zu produzieren.\\
+Die dadurch resultierende Notwendigkeit der Automatisierungstechnik entwickelte sich beständig weiter, immer mit dem Ziel, Aufgaben und Fertigungsschritte immer weiter zu separieren, nach Möglichkeit zu automatisieren und simultan zu überwachen.\\
+Damit stellt sich die Frage, was ist Automatisierungstechnik?\\
+Laut dem VDI Lexikon für Meß- und Regelungstechnik \footcite[vgl.][]{VDI}{} wird darunter ganz allgemein die Anlagen- und Prozessautomatisierung verstanden, jedoch spielt die Automatisierung auch immer weiter in Bereiche der Verkehrssicherheit, PKWs und Gebäudeinstallationen hinein.\\
+Die Steuerung dieser Automatisierungsvorgänge wurde ursprünglich durch Schütz- und Relaisteuerungen realisiert, später jedoch immer mehr durch $Speicher$ $programmierbare$\\ $Steuerungen$, sogenannte SPS Steuerungen. SPS sind der logische Entwicklungsschritt durch die Miniaturisierung der elektrischen Komponenten und die damit verbundenen Kostenvorteile. Auch in Puncto Zuverlässigkeit sind SPS den vorangegangenen Steuerungen durch Schütze und Relais weit überlegen. Aufgrund einer Kombination dieser Faktoren setzt sich die SPS in der Automatisierung immer weiter fort und durchdringt alle Bereiche.
+
+\subsection{Steuerungstechnik mit Labor}
+Im Modul "'STT20"' im Labortermin der Hochschule Pforzheim gab es erste Einblicke in den Bereich der Steuerungstechnik mithilfe praktischer Übungen und Überlegungen zu Lösungswegen.
+Das folgenden Assignment widmet sich der Steuerungstechnik, spezieller noch der Steuerungstechnik mithilfe von SPS Schaltungen. Realisiert wurden die Aufgaben in einer Automation Studio 3.0 Umgebung mithilfe verschiedener SPS Dialekte.
+\newpage
+\section{Aufgabenstellung} 
+\subsection{Aufbau der Arbeit}
+Im Assignment werden die im Labor ausgeführten Versuche kurz vorgestellt. Des weiteren behandelt das Assignment das Programm $X\_Pos$ von Konrad Knorrek sowie die Erstellung eines $Programm~Ablauf~Plans$.\\
+Das Programm $X\_Pos$ implementiert einen in $Strukturierter~Text$ geschriebenen Ablauf, der die X-Achse den geforderten Aufgaben entsprechend ansteuert.
+\subsection{Mechanischer Aufbau der Versuchsanlage}
+Die Programmierung einer Produktionsanlage ist eine große Herausforderung. Zwingend notwendig sind präzise Kenntnisse zu Beschaffenheit und Funktion. Des weiteren sind genaue Vorstellungen über Sicherheitsanforderung, benötigte Antriebsform und Materialfluss essentiell.\\
+Im Labor der Hochschule Pforzheim wird zur Durchführung der Aufgabe ein Handlingmodul (siehe Abb. \ref{Aufbau}) mit bekanntem Aufbau und Eigenschaften verwendet.\\
+\begin{figure}[h] 
+	\centering
+	\includegraphics[width=.35\textwidth]{Aufbau.JPG}
+	\caption[Handlingmodul Gesamtaufbau]{Handlingmodul Gesamtaufbau\footnotemark} 
+	\label{Aufbau}
+\end{figure}
+\footcitetext[vgl.][S 4]{Labor} 
+Das Moduls verfügt über drei Freiheitsgrade in X, Y, und Z-Richtung, das durch pneumatische Zylinder angetrieben wird und in einem definierten Arbeitsbereich kleine Aufgaben erledigen kann.\\
+Die Y-Achse liegt quer zum Aufbau und wird durch drei separate Pneumatik Zylinder angetrieben, die durch ihre Verschaltung sechs verschiedene Positionen in einem Bereich von 100mm erlauben.\\
+Die Z-Achse ist vertikal angebracht und kann mit einem Hub von 40mm zwei Schaltstellungen einnehmen, wobei darauf zu achten ist, dass die Grundstellung durch die Ventilverschaltung oben ist.
+Die für den weiteren Verlauf wichtigste Achse ist die X-Achse, die von der Z-Achse getragen wird\footcite[vgl.][S 5\psqq]{Labor}. Die X-Achse besteht aus einem Pneumatik Zylinder mit 40mm Hub und einem Schwenkgreifer, einer kompakten Kombination aus Drehelement und Greifer. Durch die asymmetrisch befestigten Greiferfinger mit 4mm Hub wird die X-Achse um weitere 20mm untersetzt. Dadurch sind vier Positionen in einem Abstand von 20mm ansteuerbar. 
+\begin{figure}[h] \label{x}
+	\centering
+	\includegraphics[width=.4\textwidth]{x.JPG}
+	\caption[Handlingmodul X-Achse]{Handlingmodul X-Achse\footnotemark} 
+\end{figure}
+\footcitetext[vgl.][S 7]{Labor}
+Die notwendigen Ventile für die pneumatischen Zylinder sind auf einer Ventilinsel untergebracht und in Form von 4/2 Wegeventilen realisiert. Die X-Achse und der Schwenkzylinder sind durch bistabile Ventile gesteuert, was zwei Schaltpositionen benötigt. Wichtig ist vor allem die Form der Ansteuerung und die Variablendeklaration.
+\subsection{Pneumatischer Aufbau der Anlage}
+\begin{figure}[h] 
+	\centering
+	\includegraphics[width=.8\textwidth]{pneu.JPG}
+	\caption[Pneumatischer Schaltplan]{Pneumatischer Schaltplan\footnotemark} 
+	\label{pneu}
+\end{figure}
+\footcitetext[vgl.][S 8]{Labor}
+Wie bereits erwähnt werden alle Komponenten von Druckluft angetrieben. In Abb. \ref{pneu} ist der Plan dargestellt mit der Wartungseinheit, die über einen Laboranschluss versorgt wird und die Druckluft regelt und aufbereitet. Als Sicherheitseinrichtung dient ein Handabsperrventil.
+In der Anlage sind ausschließlich 4/2 Wegeventile verbaut, die bi- oder monostabil sind, und per Hand oder elektrisch betätigt werden können. Die Drosseln ermöglichen eine Einstellung und Begrenzung der Geschwindigkeiten des Kolben und damit der Fahrbewegungen.
+\subsection{Steuerungskomponenten}
+Zur Durchführung der unterschiedlichen Aufgaben wird das Modul mit einer SPS Steuerung der Firma B\&R versehen.
+\begin{figure}[h] 
+	\centering
+	\includegraphics[width=.8\textwidth]{Top.JPG}
+	\caption[Topologie der Steuerungskomponenten]{Topologie der Steuerungskomponenten\footnotemark}
+	\label{Top} 
+\end{figure}
+%\footcitetext[vgl.][S 12]{Labor}
+Die X20-Zentraleinheit beherbergt den Prozessor, den Anwenderspeicher und diverse Schnittellen für Anschlüsse wie in Abb. \ref{Top} dargestellt. Das Ausgangsmodul A02622 besitzt analoge Ausgänge, die hier nicht weiter betrachtet werden.\\
+Das digitale Mischmodul DM9324 weist acht digitale Eingänge und vier digitale Ausgänge auf und verbindet die Steuerung mit den Ein- und Ausgängen eines Starttasters inklusive Licht.\\
+Das folgende Bussendermodul BT9400 ermöglicht den Anschluss eines X2XLink Kabels für weitere Systeme.\\
+Durch das 7XV Modul erfolgt über die Ausgänge das Ansteuern der Magnetspulen mit einer 24V Spannung.\\
+
+Mithilfe des digitalen Mischmoduls X67DM1321 werden die Signale der pneumatischen Aktoren abgefragt und an die Steuerung weitergegeben.\
+Eine eindeutige Deklaration der Variablen ist immens wichtig, um einen Überblick zu behalten und die entsprechenden Ausgänge richtig ansteuern zu können. Im 7XV Modul wurden dem Schaltplan entsprechend alle digitalen Ausgänge als globale Variablen deklariert.  Aufbauend drauf wurden im X67DM1322 Modul die Eingänge entsprechend dem Signalplan bezeichnet.\\
+Jede Bewegung des Moduls wird über Endschalter abgefragt, die als Eingänge festgelegt sind und entsprechend im Programm deklariert sein müssen.
+\section{Laborversuche}
+Die in Pforzheim durchgeführten Laborversuche werden im folgenden kurz dargelegt. Das oben beschriebene Handlingmodul wurde verwendet und mit der Software $Automation~Studio~4.0$ programmiert.
+\subsection{Versuch 1: Inbetriebnahme}
+\footcitetext[vgl.][S 12]{Labor}
+Die Inbetriebnahme der Anlage wird weitestgehend im Heft "'Labor Steuerungstechnik \footcite[vgl.][S. 17\psqq] {VDI}"' beschrieben und soll hier nicht weiter aufgeführt werden.\\
+\subsection{Versuch 2: Programm LED}
+Als Einführung in die Software sollte eine LED bei Tastendruck angesteuert werden.\\
+Ziel der Übung war, dass die LED bei erstmaligem Drücken des Tasters konstant leuchtet, bei erneutem betätigen in einem einstellbarem Intervall blinkt. Realisiert wurde die Steuerung in einem $Kontaktplan$ (KOP), der für dieses Assignment leider nicht mehr vorliegt.
+\subsection{Versuch 3: Greiferbewegung} \label{greifer}
+Der dritte Versuch kann als Unterprogramm für das im späteren Verlauf analysierte Programm $X\_POS$ aufgefasst werden und wurde in $Funktionsplan$ (FUP) geschrieben. Das Programm soll den Greifer in der Z-Achse bewegen. Der Greifer fährt nach unten, dort schließt der Greifer und nimmt ein Werkstück auf, fährt die Z-Achse einmal hoch und wieder nach unten und legt anschließend das Werkstück ab. Auch dieses Programm ist leider nicht mehr zugänglich.
+\section{Programm X\_Pos}
+\subsection{Variablendeklaration}
+Die gesamten Hardwarestruktur muss als neues "'Projekt"' in $Automation~Studio$ abgebildet werden.\\
+Im vorliegendem Programm ist die Variablen Deklaration nicht ersichtlich, daher können nur gewisse Rückschlüsse vorgenommen werden.\\
+Grundsätzlich werden in $Automation~Studio$ die Variablen in einem Extra File angelegt.  Es besteht die Möglichkeit, die Variablen entweder Global oder Lokal zu vergeben. Globale Variablen sind immer und überall gültig, lokale nur in der jeweiligen Sequenz.
+\subsection{Programm Initialisierung}
+Durch das in $Strukturierter~Text$ (ST) geschriebene "'Program\_INIT"' wird beim Einschalten der Anlage eine einmalige, sogenannte Initialisierung durchgeführt. Dadurch werden die Variablen auf Null gesetzt und somit eine Grundstellung definiert.
+\begin{figure}[h] 
+	%\vspace{-10pt}
+	\centering
+	\includegraphics[width=.24\textwidth]{Init.JPG}
+	\caption[Initialisierung des Programms]{Initialisierung des Programms}
+	\vspace{-10pt}
+\end{figure}
+\subsection{Zyklischer Programmteil}
+\subsubsection{Positionsabfrage}
+Der Zyklische Teil des Programmes wird grundsätzlich immer wieder durchlaufen und wiederholt sich ständig in einem bestimmten Zeitintervall. Im vorliegenden Programm wird das "'Programm\_CYCLIC"' in der Grundstellung durch eine Eingangsabfrage des Tasters $DI\_START$, der eine Variable $X\_Run$~setzt, gestartet (siehe Abb. \ref{pos}).
+\begin{figure}[h] 
+	\vspace{-10pt}
+	\centering
+	\includegraphics[width=1.00\textwidth]{cyc1.JPG}
+	\caption[Positionsabfrage]{Positionsabfrage}
+	\label{pos}
+\end{figure}
+Eine $IF$ Abfrage setzt bei korrekter Abfrage die \mbox{Variablen} $X\_Prog\_ON$ und $STEP$ auf 1. Falls der Taster nicht gedrückt wird und somit $X\_Run$ nicht gesetzt wird, passiert auch nichts.\\
+\\
+Eine weitere $IF$ Abfrage prüft die eben gesetzten Variablen $X\_Prog\_ON$ und $STEP$ und zusätzlich die Variablen $greifen$ und $ablegen$ ab.~$Greifen$ und $ablegen$ initialisieren Unterprogramme, die das Aufnehmen und Ablegen der Werktstücke umsetzten. Dieses Unterprogramm wurde ansatzweise in Kapitel \ref{greifer} auf S. \pageref{greifer} als Versuch bereits im Labor programmiert. Aufgrund der Tatsache, dass die Unterprogramme $greifen$ und $ablegen$ in Abb. \ref{pos} auf S. \pageref{pos} auf den Wert Null abfragt werden, ist es immens wichtig, die Unterprogramme auch wieder zu resetten. Das muss im vorliegenden Fall in den Unterprogrammen selbst der Fall sein.\\
+Nachfolgend wird eine Variable $voll$ mit $IF$ abgefragt und bei einem Wert 0 wird eine Variable $XPOS$ um eins inkrementiert, andernfalls dekrementiert.\\
+Nach der eben beschriebenen $IF$ Abfrage folgt ein rücksetzten der Variable $STEP$ auf 0 und somit die Vorbereitung auf den nächsten Programmschritt.\\
+\subsubsection{Greiferprogramm}
+\begin{figure}[h] 
+	\vspace{-10pt}
+	\centering
+	\includegraphics[width=0.9\textwidth]{cyc2.JPG}
+	\caption[Greifervorgang]{Greifervorgang}
+	\label{greif}
+\end{figure}
+Im weiteren Programm Code umschließt eine $IF$ Abfrage zwei separate Teile.
+\begin{figure}[!h]
+	\vspace{-10pt}
+	\centering
+	\includegraphics[width=0.35\textwidth]{pos.JPG}
+	\caption[Positionen]{Positionen}
+	\label{posi}
+\end{figure} 
+Das Programm soll Werkstücke aus einer Position aufnehmen und in einer definierten Position wieder ablegen (siehe Abb. \ref{posi}). Durch eine verschachtelte Abfrage wird im ersten Schritt entschieden, ob entweder Position eins oder drei gesetzt ist, oder Position zwei oder vier. Daraufhin wird entsprechend der Variable $voll$ = 0 aufgrund der verschiedenen Positionen das Unterprogramm $greifen$ oder $ablegen$ gestartet und $STEP$ = 1 gesetzt. Anschaulich ergibt sich daraus, dass bei den Positionen eins oder drei bei der Variablen $voll$ = 0 das Unterprogramm greifen initiiert wird und der Greifer somit ein Werkstück aufnimmt, und auf den Positionen zwei und vier bei gleichem Setting der Greifer das Werkstück ablegt.
+Anschließend wird in einer weiteren Abfrage die Variable $XPOS$ abgefragt, ob der Wert \mbox{$\leq$ 0} oder \mbox{$\geq$ 5} beträgt. Falls das der Fall ist, wird die Boolsche Variable $voll$ im Wert verändert.\\
+Anschließend werden die Variablen $X\_Prog\_ON$, $X\_Run$ und $STEP$ auf Null gesetzt, und damit das Programm nach einem Durchlauf beendet. Daraus folgt, dass das Programm in einem Durchlauf entweder Werkstücke ablegt oder aufnimmt. Erst bei erneutem setzten der $X\_Run$ Variable wird die Prozedur in umgekehrter Reihenfolge erneut abgefahren.\\
+\subsubsection{Zuweisung der Ausgänge}
+Der folgende Teil im Programm Code setzt für die verschiedenen Positionen $XPOS$ von eins bis vier die entsprechenden Ausgänge.
+\begin{figure}%[h]
+	\vspace{-10pt}
+	\centering
+	\includegraphics[width=1.1\textwidth]{aus.JPG}
+	\caption[Zuweisung der Ausgänge]{Zuweisung der Ausgänge}
+	\label{aus}
+\end{figure}
+Damit werden die $physischen$ Bewegungen der Anlage initiiert und ausgeführt. Umgesetzt wird das mit einer $IF$ bzw. $ELSIF$ Abfrage, die entsprechend der Variable $XPOS$ aus Abb. \ref{pos} auf S. \pageref{pos} die Ausgänge ansteuert, und damit die X-Achsen Bewegung ausführt. In Abb. \ref{aus} ist das einfach nachzuvollziehen.\\
+\subsubsection{Eingangsabfrage}
+Im letzten Code Abschnitt erfolgt eine Abfrage der Endschalter über die zuvor deklarierten Eingänge. Damit wird die Istposition an die Hilfsvariable $X\_Pos\_OK$ vergeben. Diese Variable ergänzt die $XPOS$ Variable als redundante Sicherheit. Die Soll Position wird nicht nur vom Programm zugewiesen, sondern auch nochmal über Endschalter abgefragt, ob sie auch wirklich erreicht wurde. Damit wird bei Klemmen oder sonstigen Blockierungen der Zylinderbewegungen das Programm nicht weiter ausgeführt und somit zum Schutz der Anlage beigetragen.\\
+Damit ist der zyklische Teil des Programms durchgelaufen. Wenn $X\_Run$ nicht erneut gesetzt wird, ist das Programm damit beendet.
+\begin{figure}[h]
+%	\vspace{-10pt}
+	\centering
+	\includegraphics[width=1.1\textwidth]{ein.JPG}
+	\caption[Eingangsabfrage]{Eingangsabfrage}
+	\label{ein}
+\end{figure}
+
+\newpage
+\subsection{Programm Ablauf Plan}
+\begin{figure}[!h]
+%	\vspace{-10pt}
+	\centering
+	\includegraphics[width=1.02\textwidth]{PAP1.jpg}
+%	\caption[Eingangsabfrage]{Eingangsabfrage}
+%	\label{ein}
+\end{figure}
+\begin{figure}[!h]
+	%	\vspace{-10pt}
+	\centering
+	\includegraphics[width=0.9\textwidth]{PAP2.jpg}
+	\caption[Programm Ablauf Plan für $X\_POS$]{Programm Ablauf Plan für $X\_POS$}
+	\label{pap}
+\end{figure}
+Mit einem Programm Ablauf Plan kann eine bessere Visualisierung eines Programms, auch für nicht Programmierer, erreicht werden. Oft ist es hilfreich, zuerst den PAP zu erstellen und damit eine Struktur festzulegen, die dann umgesetzt werden kann.
+In diesem Kapitel erscheint der PAP für das von Herr Knorrek geschriebene Programm $X\_POS$, erstellt mit dem $PapDesigner$.\\
+Die Strukturen und Funktionen des bestehenden Programms wurden alle übernommen und abgebildet.\\
+Es folgt eine kurze Zusammenfassung des Programm Ablaufs.\\
+Nach einer Initialisierung wird mit einem Taster das zyklische Programm gestartet. Daraufhin wird eine Variable $XPOS$ auf den Wert eins erhöht. Das Programm überspringt im ersten Durchlauf die folgenden $IF$ Abfragen bis zu der Stelle, wo die Ausgänge und damit die mechanische Bewegung des Greifers auf die Position eins verwirklicht wird. Nachfolgend soll durch Endschalter $X\_Pos\_OK$ die aktuellen Position zugewiesen werden. Im realen Ablauf sollte dafür eine Verzögerungszeit vor der Endschalter Abfrage eingefügt werden, ansonsten wird das Programm einige Durchläufe brauchen, bis die Eingangsabfrage auch wirklich aktiv werden kann, da eine mechanische Greiferbewegung eine gewissen Zeit in Anspruch nimmt. Im nächsten Durchlauf sind sowohl $XPOS$ als auch $X\_Pos\_OK$ gesetzt, und das Programm springt direkt in die Abfrage, wo das Unterprogramm $greifen$ oder $ablegen$ initiiert wird. Im vorliegenden Durchlauf wird $greifen$ gesetzt und durch ein Unterprogramm ausgeführt, indem das Programm auch zwingend wieder beendet werden muss. Im nächsten Durchlauf wird die Variable $XPOS$ um eins inkrementiert und im gleichen Zyklus wird wieder die mechanische Bewegung ausgeführt. Es folgt die Endschalterabfrage und das setzten von $X\_Pos\_OK$ = 2.
+Dieses mal folgt dann das Unterprogramm $ablegen$ auf Position zwei und das anschließende setzten von $STEP$ = 1. Dadurch kann im folgenden Zyklus wieder $XPOS$ erhöht werden und es folgen die Positionen drei mit aufnehmen und vier mit ablegen. Nach diesem Ablauf wird $XPOS$ noch auf den Wert 5 erhöht, springt dann in die untere $IF$ Abfrage in Abb. \ref{greif} auf S. \pageref{greif}, negiert die Variable $voll$ und stoppt das Programm. Ein erneuter Tastendruck startet das Programm wieder und es läuft diesmal genau invertiert ab. Die nächste Aufnahme erfolgt in Position vier mit Ablage in Position drei etc. und läuft wieder bis $XPOS$ bei dem Wert Null ankommt. Damit ist das Programm wieder beendet und kann ganz normal mit einem erneutem Tastendruck gestartet werden.
+
+\section{Zusammenfassung}
+Im vorliegenden Assignment wurde das Modul Steuerungstechnik bearbeitet.\\
+Es wurden der Versuchsaufbau des Handlingsmoduls, der pneumatische Plan und die Steuerungskomponenten beschrieben. Im weiteren Verlauf wurden die Versuche im Labor kurz umrissen. Den Abschluss bildet der umfangreichste Teil der Arbeit, eine grundlegende Analyse des Programm Codes und  die Erstellung eines Programm Ablauf Plans.\\
+Die Beschreibung des Versuchsaufbaus sowie die Laborversuche wurden nur sehr rudimentär durchgeführt, da der Umfang der Arbeit die verfügbaren Zeilen ansonsten bei weitem gesprengt würde.
+\newpage
+
+\printbibliography
+\newpage
+\section{Eidestattliche Erklärung}
+\vspace{4cm}
+Ich versichere, dass ich das beiliegende Assignment selbstständig verfasst, keine anderen als die angegebene Quellen
+und Hilfsmittel benutzt sowie alle wörtlich oder sinngemäß übernommenen Stellen in der Arbeit gekennzeichnet habe\\
+\vspace{4cm}
+\hrule
+\vspace{0,4cm}
+(Ort, Datum)
+\hspace{9,5cm}
+(Unterschrift)
+
+\end{document}
+
+

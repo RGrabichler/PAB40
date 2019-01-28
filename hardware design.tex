@@ -1,0 +1,303 @@
+\documentclass[12pt,a4paper]{scrartcl}	% siehe <http://www.komascript.de>
+\usepackage{selinput}		% Eingabecodierung automatisch ermitteln …
+\SelectInputMappings{		% … siehe <http://ctan.org/pkg/selinput>
+	adieresis={ä},
+	germandbls={ß},
+}
+\usepackage[left=2.5cm,right=2cm, top=3cm, bottom=3cm]{geometry} %Maße Papier
+\usepackage[ngerman]{babel}% Das Beispieldokument ist in Deutsch,
+\usepackage[T1]{fontenc}   %erweitert Zeichenvorrat bei non E/US
+\usepackage{lmodern} 		%latein moderne Schriftzeichen
+\usepackage{amsmath}		%Mathe Bundle
+\usepackage{xcolor,graphicx}
+\usepackage[onehalfspacing]{setspace} %ermöglicht Zeilenabstand von 1.5 
+\usepackage{listings}
+\usepackage[%
+automark,
+headsepline,                %% Separation line below the header
+%  footsepline,               %% Separation line above the footer
+% markuppercase
+]{scrpage2}						%entspricht fanyhdr für KOMA, 
+\automark[subsection]{section} %
+\pagestyle{scrheadings}			%mit scrartcl und unterstrichenen Sections oben
+\usepackage{csquotes}
+\usepackage{subfigure} 
+
+\usepackage[backend=biber,style=authoryear,dashed=false]{biblatex}
+\addbibresource{Literatur.bib}
+\usepackage[pdftex]{hyperref} %muss letzte vor begin document sein
+\hypersetup{colorlinks,%
+	citecolor=black,%
+	filecolor=black,%
+	linkcolor=black,%
+	urlcolor=black}
+
+\begin{document}
+\begin{titlepage}
+%\frontmatter
+	\noindent{Roman Grabichler}\\
+	Immatrikulationsnummer:	2932203\\
+	Schmiedstrasse 5\\
+	83052 Bruckmühl\\
+	RoGrStudium@gmail.com\\
+	\vspace{5cm}
+	
+	\begin{center}
+		{\Huge \textbf{Assignment} }\\ 
+		Modul: EBS01\\
+		\vspace{1cm}
+		\textbf{Thema:}\\
+		\textbf{\large{Laborbericht Hardware Design}}\\
+	
+	\end{center}
+	
+	\vspace{6cm}
+	Betreuer: Prof. Dr. Franz-Karl Schmatzer
+	\vfill Pforzheim, 16.09.2017
+
+\end{titlepage}
+\newpage
+\tableofcontents
+\newpage
+\clearpage
+\thispagestyle{empty}
+\listoffigures
+\newpage
+
+\clearpage
+\thispagestyle{empty}
+%\listoffigures
+\newpage
+%\listoftables
+%\newpage
+
+\setcounter{page}{1}
+\section{Einleitung}
+Im Modul Hardware Design (EBS01) geht es um den Entwurf komplexer Schaltungen. Grundsätzlich werden dafür hauptsächlich die zwei Beschreibungssprachen Verilog und VHDL eingesetzt. VHDL ist in Europa weit verbreitet und soll auch für die folgende Aufgabenstellung verwendet werden.\\
+VHDL ist ein Akronym für \b{V}HSIC \b{H}ardware \b{D}escription \b{L}anguage und macht deutlich, dass es sich um eine sehr schnell ausführbare Hardware Beschreibungssprache handelt\footcite[vgl.][S. 3]{Ein}.
+Im Unterschied zu der Programmierung mit C, C++ oder anderen Software Programmiersprachen beschreibt VHDL die Struktur und das Verhalten einer elektronischen Schaltung\footcite[vgl.][S. XV]{VHDL}, woraus dann durch einen Compiler ein optimierter, synthetisierter Schaltkreis abgeleitet werden kann.
+VHDL erlaubt das Synthetisieren und das Simulieren von Schaltkreisen und ist Hersteller unabhängig aufgrund der Standardisierung durch das IEEE.\\
+Im folgenden Assignment wird die Erstellung einer ALU (arithmetic and Logic Unit) mittels VHDL und der Software Quartus Lite sowie die Simulation mit Modelslim genauer erörtert.
+
+\subsection{Unterschiede zwischen nebenläufiger und sequentieller Programmierung und ihr Einfluss auf die synthetisierte Schaltung}
+Der Aufbau eines VHDL Programms ähnelt in großen Teilen der standardmäßigen Software Programmierung in C++ oder Java, besitzt aber auch substanzielle Unterschiede, auf die im folgenden kurz eingegangen wird.\\
+Am Anfang eines Programms werden üblicherweise die notwendigen Libraries oder Packages eingebunden. 
+Danach folgt die \glqq ENTITY\grqq~und die \glqq ARCHITECTURE\grqq. Optional kann eine \glqq CONFIGURATION\grqq~folgen.
+In der \glqq ENTITY\grqq~werden hauptsächlich die \glqq I/O\grqq~Ports und die \glqq Generic Constants\grqq~deklariert.
+In der \glqq ARCHITECTURE\grqq~folgt die eigentliche Programmierung, die Beschreibung der Funktion und die daraus resultierende Umsetzung in Hardware. Durch die Trennung von Schnittstellendefinition und Systembeschreibung entsteht eine Kapselung der Daten (Black Box Prinzip), wodurch bei festgelegter Schnittelle Teile des Codes von Drittanbietern geliefert werden können. Bei größeren Projekten ist diese Separierung ein immenser Vorteil, um  Entwicklungszeiten zu reduzieren und die Arbeit einem größerem Team zugänglich zu machen.
+
+\subsubsection{Nebenläufige VHDL Programmierung (concurrent)}
+Im Gegensatz zu Software Programmierung ist VHDL Code grundsätzlich nebenläufig. Das liegt an der physischen Komponente, da aus der Beschreibung eine Schaltung \glqq synthetisiert\grqq~wird, deren Gatter parallel angeordnet sind. Nur Befehlsfolgen innerhalb gewisser Strukturen können sequentiell ablaufen. Betrachtet man die Struktur als ganzes, zeigt sich wieder die Nebenläufigkeit. Mit concurrent Statements werden prinzipiell kombinatorische Schaltungen beschrieben, die keinen Speicher aufweisen, daher können die Befehle in beliebiger Reihenfolge stehen. Es ist darauf zu achten, keine unbeabsichtigten Latches zu produzieren, da Speicher Anwendungen normalerweise mit FlipFlops realisiert werden\footcite[vgl.][S. 121 ff.]{VHDL}.
+Zu bedenken ist dabei, dass auf Signale erst zugegriffen werden kann, nachdem ein Wert zugewiesen wurde.
+Ansonsten müsste auf einen älteren Wert zugegriffen werden, bzw. das Synthesewerkzeug erzeugt einen künstlichen Speicher, welcher in einen Latch resultiert.\\
+Dazu ein kurzes Beispiel in VHDL, dass die Unterschiede zu C aufzeigen soll.
+\begin{lstlisting}
+		VHDL			|	C
+1| signal x0,x1,a,b,y1,y2: bit;		|int a,b,c,;	
+2| c <= a and b;			|c = a + b;
+3| y1 <= x0 when (c='0') else x1;	|if (c<1) then.
+4| c	<= a or b;			|c = a - b;
+5| y2 <= x0 when (c='0') else x1;	|if (c>0) then..
+
+\end{lstlisting}
+Die Idee dahinter ist, ein Hilfssignal c zu berechnen um die Lesbarkeit zu erhöhen. In C funktioniert der Code einwandfrei, während in der nebenläufigen VHDL Umgebung ein Konflikt auftritt. Die Zuweisung an das Signal c ist doppelt, wird in der Laufzeit aber quasi parallel ausgeführt\footcite[vgl.][Abruf am 14.11.2017]{V}.\\
+Zur Organisation von nebenläufigem Code gibt es die Schlüsselwörter $BLOCK$~und \glqq COMPONENT\grqq. Die Befehle $WHEN$, $SELECT$~ und $GENERATE$ können ausschließlich für concurrent Code benutzt werden (in VHDL 2008 nicht mehr so strikt).\\
+Mit concurrent Code können einfach digitale Schaltungen erstellt werden in Form von \glqq NAND\grqq\\
+und \glqq NOR\grqq~Gates.
+Prinzipiell kann damit jede digitale Schaltung realisiert werden. Meist ist das jedoch nur für relativ einfache Schaltungen sinnvoll und zielführend.
+
+\subsubsection{Sequentielle VHDL Programmierung (sequential)}
+In VHDL gibt es drei sequentielle Strukturen. Die Strukturen $FUNCTION$~und \glqq PROCEDURE\grqq~sind Unterprogramme, die vor allem in Bibliotheken angewendet werden. $PROCESS$ ist die wichtigste dieser Strukturen und wird vor allem im Hauptteil angewendet\footcite[vgl.][S. 75f.]{VHDL}.
+Sequentielle Logik hängt im Gegensatz zu nebenläufiger Logik fast immer auch von den vorherigen Zustände des Systems ab. Es gibt für sequentielle Programmierung auch spezielle Befehle, die nur in sequentieller Umgebung benutzt werden können. 
+Darunter fallen die Befehle $IF$, $WAIT$, $LOOP$~und $CASE$.\\
+Wichtig für das Verständnis von sequentiellen Code ist die Unterscheidung von Signalen und Variablen. Signale können nur außerhalb von sequentiellen Code deklariert werden. Als anschauliche Hilfe bietet sich an, Signale als Eingänge bei einer SPS Steuerung zu betrachten. Die Werte können sich zu einem beliebigen Zeitpunkt ändern, werden aber nur einmal pro Durchlauf abgefragt. Daraus ergibt sich auch, dass nur eine Zuweisung sinnvoll und zulässig ist. Im Gegensatz dazu werden Variablen innerhalb eines sequentiellen Bodies deklariert und benutzt. Somit erfolgt die Aktualisierung sofort und es können mehrere Zuweisungen aufeinander folgen. 
+
+\subsubsection{Einfluss des Programmierstils auf die Synthese}
+In VHDL sind die unterschiedlichen Strukturen für nebenläufigen und sequentiellen Code bei der Programmierung zu beachten. Der Anwendungsfall richtet sich immer nach den Aufgaben und Zielen. Außerdem ist es essentiell, die Unterschiede in der Programmierung für die Synthetisierung und die Simulation zu kennen und korrekt anzuwenden.\\
+VHDL deckt als Hardware Beschreibungssprache unterschiedliche Abstraktionsgrade ab. Die Synthese bezeichnet darin die Transformation der Verhaltensbeschreibungen in Strukturbeschreibungen. Durch zunehmende Abstraktion in der Entwurfsebene ergeben sich immer mehr Freiheitsgrade. Es gibt somit immer eine Kompromiss aus Geschwindigkeit und der Anzahl an Schaltstufen bei der Synthese. Dafür gibt es unterschiedliche Synthese Werkzeuge, die immer weitere Spezialisierungen aufweisen. Gleichzeitig sind gewisse Regeln einzuhalten, um quasi \glqq snythesis-ready code\grqq zu erstellen. Für Experten bieten sich in diesem Feld unzählige Möglichkeiten, die Ergebnisse in Hinblick auf die geforderte Aufgabenstellung zu optimieren\footcite[vgl.][Abruf am 15.11.2017]{V}.\\
+Die Programm Struktur $PROCESS$~leitet einen sequentiellen Block ein und muss entweder ein \glqq WAIT Statement\grqq~oder eine \glqq Sensivity List\grqq~enthalten, niemals beides gleichzeitig. Die \glqq Sensivity List\grqq~fungiert quasi als Türsteher. Bei Beginn der Simulation wird als Initialisierung jeder Prozess aktiviert und bis zu einem \glqq Wait\grqq~ausgeführt. Bei Erfüllung der Bedingung wird der Prozess erneut aufgerufen und sozusagen als Endlosschleife ausgeführt. Eine \glqq Sensivity List\grqq~wird als \glqq Wait On\grqq~am Ende interpretiert. Bei jeder Änderung des Signalzustands in der Liste wird der Block durchlaufen. Dadurch können weitere Strukturen angestoßen werden und der Code wird wieder und wieder durchlaufen.\\
+Synthetisierbare Prozesse werden auf Hardwarekomponenten zurückgeführt, daher ist bei einer Unterscheidung kombinatorischer und getakteter Hardware (sequentiell) die Einhaltung gewisser Regeln erforderlich. In der Praxis bedeutet dies, dass im Quellcode nur jeweils eine Teilmenge der VHDL Syntax verwendet werden kann\footcite[vgl.][S. 34 f.]{pro}. Das \glqq Wait Statement\grqq~gibt es in drei unterschiedlichen Formen. Mit \glqq WAIT UNTIL\grqq~und \glqq WAIT ON\grqq~können Bedingungen programmiert werden. \glqq WAIT FOR\grqq~ist ausschließlich für die Simulation geeignet. Damit können Signale erzeugt werden, die als Stimuli in einer Testbench eingesetzt werden.\\
+Schleifenkonstrukte werden in VHDL im sequentiellen Teil mit dem Befehl \glqq LOOP\grqq~und im nebenläufigem Bereich mit \glqq GENERATE\grqq~realisiert.\\
+Speziell für die Simulation sind Befehle für Verzögerungszeiten. Die häufigsten Befehle hierzu sind \glqq WAIT FOR\grqq~und \glqq After\grqq. Damit kann zeitliches Verhalten beschrieben werden. Wichtig ist, dass diese Verzögerungszeiten nur in der Simulation funktionieren und nicht synthetisierbar sind. Zusätzlich ist auch zu beachten, dass viele Konstrukte syntaktisch zwar in Ordnung sind und beim Compiler und in der Simulation funktionieren, in synthetisierten Schaltungen jedoch zu teils unerwünschtem Verhalten führen können. Das können ungewollte Latches, kombinatorische Schleifen und vieles weitere sein.
+\section{Erstellung einer arithmetischen und logischen UNIT mittels VHDL}
+\subsection{Einleitung arithemtische und logische Unit }
+Im aktuellen Kapitel wird die Erstellung der ALU (arithmethic logic Unit) mittels VHDL genauer thematisiert.\\
+In Mikroprozessoren werden Daten verarbeitet. Dazu gehört, Zustände und Zahlen zu verknüpfen und das Ergebnis auszugeben. Die mathematischen und logischen Operationen werden in einer ALU ausgeführt. Dazu werden die Signale an den Eingängen \glqq a\grqq~und \glqq b\grqq~auf verschiedene Arten verknüpft und am Ausgang \glqq y\grqq~ausgegeben. Gesteuert werden die verschiedenen Operationen durch den Befehl \glqq opcode\grqq. Die durchzuführenden Operationen sind grundlegende Logikverknüpfungen wie \glqq AND, OR, XOR\grqq~usw. und arithmetische Operationen wie \glqq Increment, Transfer, ADD, Decrement\grqq. Der \glqq cin\grqq~kennzeichnet einen Übertrag und ist in dieser Aufgabenstellung nur für die letzte arithmetische Funktion relevant.\\
+\subsection{Deklaration des Programm Headers}
+In den ersten Zeilen des VHDL Codes wird die \glqq Library ieee \grqq~eingebunden, welche die Standard Packages \glqq std\_logic\_1164\grqq~und \glqq numeric\_std\grqq~beinhaltet. 
+\begin{figure}[h]
+	
+	\includegraphics[width=0.2\textwidth]{code1.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Diese Packages definieren Standard Logik Operationen und \glqq signed/unsigned\grqq~Arithmetik.\\
+\subsection{Erstellung der Entity \glqq ALU\grqq}
+Im folgenden Teil wird die \glqq ENTITY\grqq~deklariert und die Ports festgelegt. 
+\begin{figure}[htb]
+	
+	\includegraphics[width=1\textwidth]{code2.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Mit \glqq Generic\grqq~wird eine variable Wortbreite erzeugt. Durch die Definiton als \glqq Generic Constant\grqq~ist die Anzahl der Bits sehr einfach verstellbar. Die Eingänge $i\_a$~und $i\_b$~sowie der Ausgang $o\_y$~ sind als\\ $STD\_LOGIC\_VECTOR$~definiert und entsprechen damit der Industrienorm. Ein Vektor kann dabei als eindimensionales Array verstanden werden. Der Vektor $i\_cin$~beschreibt einen Übertrag und $i\_opcode$~selektiert die entsprechende arithmetische oder logische Verknüpfung im Hauptteil.\\
+Damit ist die $ENTITY$ beendet und die $ARCHITECTURE$ folgt.
+\subsection{Architecture der Entity \glqq ALU\grqq}
+Diese besteht aus einem optionalen, deklarativen und einem beschreibenden Teil, der durch $BEGIN$~und $END$~eingeschlossen ist. 
+\begin{figure}[htb]
+	
+	\includegraphics[width=1\textwidth]{code3.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Signale übertragen Wertewechsel innerhalb einer Schaltung und führen die Kommunikation zwischen Prozessen durch. Die Wertzuweisung bei Signalen wird in VHDL erst beim nächsten $Wait~Statement$~übertragen.
+Zwischen den Zeilen 27 bis 30 werden Ersatzsignale bereitgestellt, die für die Trennung von $signed$~und $unsigned$~Signalen mittels Typecasting verwendet werden\footcite[vgl.][S. 75f.]{VHDL}.\\
+Im nachfolgenden Programmteil wird der Logikteil innerhalb einer Process Umgebung mit\\ $Sensivity~List$~mittels einer $CASE$ Struktur abgearbeitet. Die $Sensivity~List$ ist zwingend erforderlich und hat den Effekt, dass bei jeder Signal Änderung in der $Sensivity~List$ der $Process$ gestartet wird. Die verschiedenen Logik Operationen werden durch die Eingabe des $Opcodes$ gesteuert. 
+\begin{figure}[htb]
+	
+	\includegraphics[width=1\textwidth]{code4.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Der 4-Bit $Opcode$ wird gesplittet in die drei LSBs (least siginificant bits) und das MSB (most siginificant bit). Am Ende des Programms wird durch eine Fallunterscheidung ermittelt, ob MSB den Wert 0 oder 1 besitzt. Dadurch ergibt sich die Unterscheidung, ob eine logische Operation als \glqq unsigned\grqq~ oder eine arithmetische Operation als \glqq signed\grqq~ausgeführt werden muss. Den Abschluss eines $CASE$ Blocks bildet das $WHEN~OTHERS$ als Default. Dadurch wird gewährleistet, dass alle Fälle programmiert sind, um unerwünschte Latches zu vermeiden.\\
+\begin{figure}[htb]
+	
+	\includegraphics[width=1\textwidth]{code5.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+In den Zeile 50 bis 53 wird der arithmetische Block vorbereitet. Dazu wird ein Type Casting des $STD\_LOGIC\_VECTOR$~nach $Signed$~ ausgeführt. Dadurch können auch negative Zahlen dargestellt werden. Mit x\_int wird eine Hilfsvariable eingeführt, damit die geforderte Summe in der letzten Operation berechnet werden kann\footcite[vgl.][S. 128 f.]{VHDL}. 
+\begin{figure}[hbt]
+	
+	\includegraphics[width=1\textwidth]{code6.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+\begin{figure}[bth]
+	
+	\includegraphics[width=1\textwidth]{code7.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Im Gegensatz zum Logikteil wird der arithmetische Teil $concurrent$~ausgeführt mit dem $Select$~Befehl. 
+Der errechnete Wert wird der Hilfsvariablen y\_signed zugewiesen. Im letzten Schritt wird über einen Multiplexer die Typ Konvertierung wieder rückgängig gemacht und das Endergebnis ausgegeben.
+Der fertige Code wird von Quartus fehlerfrei kompiliert. Dennoch werden vom \glqq TimeQuest Timing Analyzer\grqq~\glqq Unconstrained Paths und Ports\grqq
+\begin{figure}[hbt]
+	
+	\includegraphics[width=0.4\textwidth]{tbc.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+bemängelt . In der Praxis müsste daran weiter optimiert werden, im vorliegenden Assignment spielt das jedoch keine weitere Rolle.
+\section{Testbench mit Stimuli für die erstellte ALU in ModelSim}
+\subsection{Allgemeines zu einer Testbench in VHDL}
+Ein essentieller Teil der Programmierung ist die Verifizierung des Codes. In VHDL gibt es verschiedene Möglichkeiten, um Code zu testen. Ein wichtiger Schritt zur Verständnis von VHDL ist die Unterscheidung von Simulation und Synthese fähigem Code. Die verschiedene Simulationsoptionen werden im Buch \glqq Circuit Design and Simulation with VHDL\grqq~sehr detailliert beschrieben\footcite[vgl.][S. 241 ff.]{VHDL}.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\textwidth]{tb.png}
+	\caption[Allgemeiner Aufbau einer Testbench]{Allgemeiner Aufbau einer Testbench\footnotemark}
+	%\label{w}
+\end{figure}
+\footcitetext[vgl.][Abruf am 23.11.2017]{bu}
+Standardmäßig werden Änderungen einen Signals zu bestimmten Zeitpunkten betrachtet. Diese Zeitangaben sind nicht synthetisierbar und nur für die Simulation geeignet.
+\newpage
+\begin{lstlisting}
+		process is
+		  constant rate: time := 10ns;
+		begin
+		  clk <= '0', '1' after rate/2;
+		  wait for rate;
+		end process;
+\end{lstlisting}
+In obigem Code wird ein periodisches Taktsignal \glqq clk\grqq~erzeugt\footcite[vgl.][S. 60]{Kom}. Damit können zeitlich veränderbare \glqq Stimulis\grqq~erzeugt werden. In der nachfolgenden Testbench werden mit diesem Prinzip in einem festgelegten Taktzyklus die verschiedenen Funktionen geprüft durch ein gezieltes Abtasten des \glqq opcodes\grqq. Häufig wird für eine Testbench eine vorbereitet Datei mit Testvektoren eingelesen. Dieses Verfahren eignet sich insbesondere für große Projekte, da bei Designänderungen ein standardisiertes Verfahren immer wieder angewendet werden kann.
+\subsection{Code der Testbench zu der vorgestellten ALU}
+Die Testbench resultiert aus dem Code der ALU. Die Testbench ist ausschließlich für eine Simulation geeignet. Zur Stimuli Erzeugung werden nicht synthetisierbare Takte und Signale erzeugt. Die \glqq ENTITY\grqq~einer Testbench ist leer. Daher wird die ganze Deklaration stattdessen in der \glqq ARCHITECTURE\grqq~untergebracht. Das  klappt mit der Anweisung \glqq COMPONENT\grqq~und muss der \glqq ENTITY\grqq~entsprechen\footcite[vgl.][S. 10]{Ein}.
+\begin{figure}[htb]
+	
+	\includegraphics[width=1\textwidth]{tb1.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+In Zeile 16 - 21 werden die Eingangs- und Ausgangssignale deklariert. In Zeile 23 - 25 kommen das Signal CLK und CLK\_Period dazu, die für die Simulation einen Takt generieren. Darauf folgt die bereits erwähnte \glqq COMPONENT\grqq.
+\begin{figure}[h]
+	
+	\includegraphics[width=1\textwidth]{tb2.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Ab Zeile 38 wird die \glqq PORT MAP\grqq~für die UUT (unit under test)erstellt. Damit werden die Signale der \glqq ARCHITECTURE\grqq~zur Verfügung gestellt.
+\begin{figure}[]
+	
+	\includegraphics[width=0.7\textwidth]{tb3.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Im Anschluss wird in einem sequentiellen \glqq PROCESS\grqq~mit dem Namen \grqq CLK\_Process\grqq~das Takt Signal definiert. Mit der vorher festgelegten \glqq CLK\_Period\grqq~von 10ns alterniert das \glqq CLK\grqq~Signal alle 5ns zwischen 0 und 1.\\
+Drauf folgt der letzte Teil der Testbench, die Erzeugung des \glqq Stimulus Process\grqq. Das Prinzip besteht darin, die Eingänge \glqq i\_a\grqq~und \glqq i\_b\grqq~zu deklarieren.
+\begin{figure}[htb]
+	
+	\includegraphics[width=1\textwidth]{tb4.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Anschließend werden alle geforderten Operationen der ALU aufgerufen durch den entsprechenden \glqq opcode\grqq. Nach jedem \glqq i\_opcode\grqq~sorgt ein \glqq wait for CLK\_Period\grqq~für ein stabiles Signal von 10ns. Die einzelnen Operationen können aus dem Code der Testbench entnommen werden. Damit endet der Code der Testbench und es folgt die Simulation in ModelSim.
+
+\subsection{Simulationsergebnisse zu der vorgestellten ALU}
+In Quartus Prime Lite liegen nun zwei separate Dateien bereit. In einer ist der Code zur Beschreibung der ALU, in der anderen die Testbench für diese ALU. Mit der passende Einstellung in den \glqq EDA Tool Settings\grqq, mit dem Tool \glqq ModelSim-Altera\grqq~ und dem Format \glqq Verilog HDL\grqq~kann die Simulation gestartet werden (Weitere Einstellungen können im Internet nachgeschlagen werden). 
+Es öffnet sich das Programm ModelSim. Nach dem manuellen Compilen der Testbench erscheint die Datei \glqq alu\grqq~und \glqq bench\_of\_alu\grqq. Nach dem Doppelklicken der Testbench und Hinzufügen einer $Wave$~kann die eigentliche Simulation beginnen.\\
+\begin{figure}[htb]
+	
+	\includegraphics[width=0.6\textwidth]{tbb.png}
+	\caption{Start von ModelSim im Quartus Prime Lite}
+	%\label{w}
+\end{figure}
+Die Werte sind im ersten Zyklus der Clock alle auf Null wie erwartet. Ausnahmen sind nur o\_y, da bei \glqq opcode = 0000\grqq~die Operation $y = Not~a$~durchgeführt wird und i\_cin. I\_cin wurde in der Simulation auf 1 $geforced$, damit in der passende arithmetischen Operation etwas passiert.
+\begin{figure}[htb]
+	
+	\includegraphics[width=1\textwidth, height=140px]{sm1.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Nach dem ersten Clock Zyklus, also 10ns werden die in der Testbench spezifizierten Werte angenommen für i\_a und i\_b. Die Darstellungen der logischen Operationen lassen sich binär leicht überprüfen. Soweit funktioniert alles korrekt.
+\begin{figure}[h]
+	
+	\includegraphics[width=1\textwidth, height=140px]{sm2.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Wenn das Anzeigeformat auf dezimale Zahlen umgestellt wird, ergeben sich plötzlich negative Zahlen für o\_y. Da eigentlich für die logischen Operatoren der Werte Bereich als unsigned angegeben wird, kann hier das Resultat nicht nachvollzogen werden.\\
+\begin{figure}[h]
+	
+	\includegraphics[width=1\textwidth, height=140px]{sm3.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Der arithmetische Teil der ALU lässt sich in der Simulation mit dezimaler Anzeige deutlich einfacher verfolgen. Die Grafik verifiziert die Ergebnisse und zeigt alle Operationen korrekt an.\\
+Als letztes folgt eine Kontrolle, ob die Modifikation \glqq signed\grqq~richtig dargestellt wird. Dafür wird der Wert von i\_b auf 120 erhöht. Da bei acht Bits bei \glqq signed\grqq~ein Wertebereich von -128 bis 127 zur Verfügung steht, muss es bei den letzten zwei Operationen zu ungewolltem Überlauf kommen.
+\begin{figure}[htb]
+	
+	\includegraphics[width=1\textwidth, height=140px]{sm4.png}
+	%\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	%\label{w}
+\end{figure}
+Die Grafik zeigt auch, dass Probleme auftauchen. Interessant ist jedoch, wie die Addition verarbeitet wird. Wenn man die zwei Zahlen 18 und 120 binär darstellt, werden 00010010 und 01111000 daraus.
+\begin{align}
+		00010010 \notag\\
+		01111000\notag\\
+	= 	10001010\notag
+\end{align}	
+Das ergibt dezimal die Zahl 138. Da aber ein Überlauf auftritt, wird aus 138 die Zahl \mbox{-118}. Diese auf den Blick verblüffende Zahl lässt sich durch die Einerkomplementdarstellung von binären Zahlen erklären. Da der Wertebereich überschritten wird mit 138, wird aus der Binärdarstellung 10001010 das Einerkomplement erzeugt. Dafür werden alle Bits invertiert und eine 1 addiert. Das ergibt 01110110, und damit in der dezimalen Darstellung -118.
+\clearpage
+\section{Fazit}
+Das Modul \glqq Hardware Design\grqq~vermittelt erste Eindrücke zu VHDL.\\
+Es gab eine Auswahl an unterschiedlichen Themen wie Schieberegister, Flipflops und ALU. Eines dieser Themen musste genauer ausgearbeitet werden. Notwendig dazu waren der Synthetisierbare Code, eine Testbench und das vorliegende Assignment.\\
+Die Software von Quartus ist bemerkenswert umfangreich, es gibt unzählige Möglichkeiten zur Analyse, Synthese und Simulation. Die Beschreibung in den Studienheften dazu ist sehr dürftig, und erst das Buch \glqq Circuit Desgin and Simulation with VHDL\grqq~konnte etwas weiterhelfen. Zusätzlich problematisch ist persönlich mein fehlender Praxisbezug, da ich weder beruflich noch privat im Entferntesten damit zu tun habe.\\
+Beim erstellen des Codes für eine ALU gibt es unzählige Möglichkeiten. Das bietet auf der einen Seite für Experten viel Verbesserungspotenzial, auf der anderen Seite stiftet es Verwirrung. Da der oben vorgestellte Code nicht auf Optimierung ausgelegt ist, wurde einmal zur Auswahl der Funktionen ein nebenläufiges Statement, einmal ein sequentiellen herangezogen. Die Frage nach Praxistauglichkeit kann hier nicht weiter beantwortet werden.\\
+
+\newpage
+
+\printbibliography
+
+
+
+\end{document}

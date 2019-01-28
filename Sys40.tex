@@ -1,0 +1,347 @@
+\documentclass[12pt,a4paper]{scrartcl}	% siehe <http://www.komascript.de>
+\usepackage{selinput}		% Eingabecodierung automatisch ermitteln …
+\SelectInputMappings{		% … siehe <http://ctan.org/pkg/selinput>
+	adieresis={ä},
+	germandbls={ß},
+}
+\usepackage[left=2.5cm,right=2cm, top=3cm, bottom=3cm]{geometry} %Maße Papier
+\usepackage[ngerman]{babel}% Das Beispieldokument ist in Deutsch,
+\usepackage[T1]{fontenc}   %erweitert Zeichenvorrat bei non E/US
+\usepackage{lmodern} 		%latein moderne Schriftzeichen
+\usepackage{amsmath}		%Mathe Bundle
+\usepackage{xcolor,graphicx}
+\usepackage[onehalfspacing]{setspace} %ermöglicht Zeilenabstand von 1.5 
+\usepackage{listings}
+\usepackage[%
+automark,
+headsepline,                %% Separation line below the header
+%  footsepline,               %% Separation line above the footer
+% markuppercase
+]{scrpage2}						%entspricht fanyhdr für KOMA, 
+\automark[subsection]{section} %
+\pagestyle{scrheadings}			%mit scrartcl und unterstrichenen Sections oben
+\usepackage{csquotes}
+\usepackage{subfigure} 
+
+\usepackage[backend=biber,style=authoryear,dashed=false]{biblatex}
+\addbibresource{Literatur.bib}
+\usepackage[pdftex]{hyperref} %muss letzte vor begin document sein
+\hypersetup{colorlinks,%
+	citecolor=black,%
+	filecolor=black,%
+	linkcolor=black,%
+	urlcolor=black}
+
+\begin{document}
+\begin{titlepage}
+%\frontmatter
+	\noindent{Roman Grabichler}\\
+	Immatrikulationsnummer:	2932203\\
+	Schmiedstrasse 5\\
+	83052 Bruckmühl\\
+	RoGrStudium@gmail.com\\
+	\vspace{5cm}
+	
+	\begin{center}
+		{\Huge \textbf{Assignment} }\\ 
+		Modul: SYS40\\
+		\vspace{1cm}
+		\textbf{Thema:}\\
+		\textbf{\large{Assignment MCT02}}\\
+		\textbf{Simulink-Simulation eines einfachen Drehspulen-Spannungsmessgerätes}\\
+		
+	\end{center}
+	
+	\vspace{6cm}
+	Betreuer: Prof. Dr. Ewald Lehmann
+	\vfill Bruckmühl, 11.08.2018
+
+\end{titlepage}
+\newpage
+\tableofcontents
+\newpage
+\clearpage
+\thispagestyle{empty}
+\listoffigures
+\newpage
+
+\clearpage
+\thispagestyle{empty}
+%\listoffigures
+\newpage
+%\listoftables
+%\newpage
+
+\setcounter{page}{1}
+\section{Einleitung}
+Das \textbf{Modul SYS40}~beschäftigt sich mit der Dynamik von Systemen. Das beinhaltet Zustandsraumdarstellungen, digitale Regelungen und den Entwurf mechatronischer Systeme.\\
+Die komplexe Materie setzt Grundlagen in Regelungstechnik und Anwendungskenntnisse in Bereichen der Dynamik, Maschinenelemente und Modellierung von Systemen voraus.\\
+\\
+Als Modulnote ist das Bestehen einer Klausur und ein komplementäres Assignment notwendig.\\
+In der Aufgabenstellung wird die Funktionsweise eines Drehspulen Spannungsmessgerätes behandelt. Im vorliegenden Dokument wird die Modellierung mithilfe von \textbf{Simulink} vorgenommen. Im weiteren Verlauf wird mit dem entstandenen Modell gearbeitet. Es werden Simulationen mit unterschiedlichen Integrationsverfahren und Schrittweiten durchgeführt. Die gewonnenen Erkenntnisse werden ausgewertet und verglichen.\\
+
+
+
+\section{Ziel und Relevanz der Arbeit}
+Das folgende Assignment erarbeitet aus den Bewegungsgleichungen des Drehspulen Messgeräts ein \textbf{Simulink Modell}.\\
+Mithilfe dieses Modells werden unterschiedliche Simulationen durchgeführt. Durch eine Variation verschiedener Integrationsverfahren und unterschiedlicher Schrittweiten sollen Ergebnisse verglichen und bewertet werden.\\
+Die geeignete Wahl eines Integrationsverfahren wird durch die Ergebnisse begründet.\\
+Als letzte Forderung wird ein Umrechnungsfaktor dargestellt, der dem Winkelausschlag des Zeigers eine Spannung in Volt zuordnet.\\
+\\
+In der Technik, vor allem der Regeltechnik, gibt es unzählige Anwendungsfälle, wo zwei Massenspeicher modelliert und simuliert werden. Die hier beschrieben Problematik wurde sicher in der Praxis schon erschöpfend und abschließend behandelt, weshalb dieses Assignment vorwiegend akademischen Nutzen besitzt. Wichtig ist hiervon vor allem der Umgang mit \textbf{MatLab} und \textbf{Simulink}. Das Softwarepaket ist immens mächtig und in der Industrie dementsprechend weit verbreitet.
+
+
+\section{Grundlagen des Drehspulen Messgerätes}\label{grundlagen}
+Der Messvorgang einer Messeinrichtung beruht auf unterschiedlichen Prinzipien. Im Drehspulen Messgerät kommt die Lorentzkraft zum tragen.
+\[ \vec{f} = i\vec{l}\times \vec{B}  \]
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.4\textwidth]{images/drehspuleprinzip.png}
+	\caption{Prinzipskizze eines Drehspulen Messgerätes}
+	%\label{w}
+\end{figure}
+Ein weiteres Merkmal ist eine Unterscheidung in verschiedene Messverfahren.\\
+Bei einem Drehspulengerät handelt es sich bei der Messung um ein direktes, analoges Ausschlagverfahren. Da die Messgröße auch als Energieträger für die Ausgabegröße dient, ist der Anzeigewert immer fehlerbehaftet.
+Bestimmte Baumaßnahmen des Drehspulenmessgerätes minimieren diese Fehler, wodurch ein sehr präzises Messinstrument geschaffen wird.\\
+Die Bauart eines Drehspulenmesswerks wird durch eine drehbar gelagerte Spule im Feld eines Dauermagneten charakterisiert. Ein durch die Spule fließender Strom verursacht ein Drehmoment. Das Rückstellmoment einer Feder kompensiert dieses Moment und verursacht eine Dämpfung bis zum Stillstand bei passenden Parametern. Die Drehung der Spule wird auf einen Zeiger übertragen. Ohne einer Hilfsschaltung in Form eines Gleichrichters kann mit einem Drehspulenmesswerk nur eine Gleichspannung angezeigt werden, da der arithmetische Mittelwert des Stroms visualisiert wird\footcite[vgl.][S. 223]{elek}.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.4\textwidth]{images/drehspule.png}
+	\caption{Drehspul-Messwerk mit Außenmagnet (Firmenbild H\&B)}
+	%\label{w}
+\end{figure}
+Um einen größeren Messbereich abzudecken, werden Vor - bzw. Nebenwiderstände angebracht. Die Empfindlichkeit des Geräts ist vorgegeben und wird im Datenblatt angegeben. Die Angabe 1000~$\Omega$/V besagt zum Beispiel, dass das Messwerk 1 mA Strom bei Vollausschlag aufnimmt. Durch speziell abgeglichene Vor- oder Nebenwiderstände können bestimmte Messbereichserweiterungen vorgenommen werden\footcite[vgl.][Abruf am 15.0.2018]{dreh}.
+
+
+
+\section{Matlab und Simulink}
+\textbf{MatLab}, von \textbf{MATrix LABoratory}, ist eine der marktführenden Softwarelösungen im Bereich mathematischer Probleme. Besonders geeignet ist das Programm für numerische Berechnungen mithilfe von Matrizen. \textbf{MatLab} wird von MathWorks, einem amerikanischen Unternehmen entwickelt und vertrieben.\\
+Große Bedeutung besitzt die Software in der Praxis bei numerischen Berechnungen, in der Regelungstechnik und bei der Modellierung von Systemen\footcite[vgl.][S.62 \psqq]{simu}. Ein Beispiel dafür ist die Modellierung des Lagrange-Formalismus in \textbf{MatLab}. Mit bestimmten Erweiterungen und Addons steigt die Verbreitung von \textbf{MatLab} auch in den Wirtschaftswissenschaften immer stärker an. \\
+Die Programmierung erfolgt in einer proprietären Programmiersprache, die mit einer mathematisch orientierten Syntax für schnelle Erfolge sorgt. Assistiert von Funktionen und Skripten können einfach eigene Bausteine erstellt werden.
+Mithilfe von Schnittstellen ist es möglich, fertigen C-Code einzubinden und aus \textbf{MatLab} auch wieder zu erstellen. Das ermöglicht das Testen von komplexen Modulen in \textbf{MatLab}\footcite[vgl.][Abruf am 16.08.2018]{matlab}.\\
+\\
+Die Software \textbf{Simulink} ist eine von Mathworks entwickelte Toolbox und setzt damit \textbf{MatLab} voraus. Im Gegensatz zu \textbf{MatLab} arbeitet \textbf{Simulink} mit Blöcken, die verschiedene Funktionen ausführen. Damit sind Anwendungen wie Darstellung von Daten, Filtern, Sprungantworten und vieles mehr möglich. Zusätzlich ist es möglich, selbst geschriebene M-Files als \textbf{Simulink} Blöcke zu importieren. Der große Vorteil besteht darin, dass parametriert wird, anstatt textuelles programmieren wie in \textbf{MatLab}. Durch Einfügen der Blöcke und dem Erstellen von Verbindungen können sehr einfach und schnell komplexe Anwendungen simuliert werden. \textbf{Simulink} bietet verschiedenen Solver und eine Variation der Schrittweiten zur numerischen Integration an. Mithilfe eines Plugins kann aus diesen Simulationen, analog zu \textbf{MatLab}, C-Code erstellt werden\footcite[vgl.][Abruf am 23.08.2018]{matlab}.
+
+
+\section{Bearbeitung der Themenstellung}
+\subsection{Mathematische Beschreibung des Drehspulen Systems}
+Die Wirkungsweise und Bauart eines Drehspulenmesswerks wurde bereits in Kapitel \ref{grundlagen} auf S. \pageref{grundlagen} erörtert. Im folgenden Abschnitt erfolgt der Übergang zu den zugrundeliegenden physikalischen Prinzipien, und darauf aufbauend einem mathematischen Modell als Basis für die weitere, numerische Betrachtung in \textbf{Simulink}.\\
+\\
+Durch einen Stromfluss wird der Zeiger ausgelenkt und bleibt in einer entsprechenden, neuen Ruhelagen stehen. Die Wirkungsweise wird nun genauer betrachtet. Interessant ist die Tatsache, dass der Zeiger, obwohl er zwei Massespeicher besitzt, nicht um die neue Ruhelage schwingt.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.45\textwidth]{images/dreh.png}
+	\caption[\textbf{a}  Drehspulenmesswerk im Schnitt und \textbf{b}  Spule in der Aufsicht]{\textbf{a} Drehspulenmesswerk im Schnitt und \textbf{b}  Spule in der Aufsicht\footnotemark }
+	\label{schnitt}
+\end{figure}
+\footcitetext[vgl.][S. 263]{lehr}
+In der Abb. \ref{schnitt} ist der schematische Aufbau eines Drehspulmesswerks im Schnitt und in der Aufsicht gezeigt. Eine Leiterschleife mit \textbf{N} Windungen hat eine Fläche
+\[ A = a*b \]
+Der magnetische Fluss $\Phi$~durch die Schleife lässt sich mit der Formel
+\[ \Phi = A*B*sin\rho \]
+ausdrücken. Im weiteren Verlauf wird die Näherung $sin\rho~=~\rho$~benutzt. Mithilfe des Induktionsgesetzes und der Lenz'schen Regel ergibt sich dadurch eine der Ursache entgegenwirkende Induktionsspannung.  \\
+Auf das System wirken zwei gegensätzlichen Drehmomente. Durch den Strom wird das Moment \textbf{M$_{\Phi}$}~ erzeugt, dem das Rückstellmoment \textbf{M$_{F}$}~entgegenwirkt.
+\textbf{M$_{F}$}~ wird mathematisch beschrieben durch
+\begin{equation}
+M_{F} = c_{F} * \alpha~[Nm/rad]
+\end{equation}
+\textbf{M$_{\Phi}$}~lässt sich durch 
+\begin{align}
+M_{\Phi} = c_{\Phi}*i~[c^{\Phi} = Nm/A]
+\end{align}
+ausdrücken. Mit dem Ausdruck
+\begin{align}
+i 		= \frac{u}{R} - \frac{u_{i}}~=~ \frac{u}{R} - \frac{u_{i}*\alpha}{R}
+\end{align}
+und \textbf{$\Phi$} [kgm$^{2}$/rad]~als Trägheitsmoment\footcite[vgl.][76 \psq]{elek},\footcite[vgl.][S. 264 ]{lehr}, ergibt sich das dynamische Momentengleichgewichts des Systems zu:
+\[  \ddot{\alpha}*\Phi = M_{\Phi} - M_{F} \]
+Mithilfe der Angaben aus der Aufgabenstellung und einigen Umformungen ergibt sich eine inhomogene Differentialgleichung zweiter Ordnung
+\begin{equation}
+ \ddot{\alpha}+\frac{c_{\Phi}*c_{i}}{R*\Phi}*\dot{\alpha}+\frac{c_{F}}{\Phi}*\alpha = \frac{c_{\Phi}}{R*\Phi}*u  
+\end{equation}
+Nach der Laplace Transformation und umstellen nach der Übertragungsfunktion G(s) folgt
+\begin{equation}\label{laplace}
+ G(s) = \frac{A(s)}{U(s)}= \frac{\frac{c_{\Phi}}{R*\Phi}}{s^{2}+\frac{c_{\Phi}*c_{i}}{R*\Phi}*s+\frac{c_{F}}{\Phi}} 
+ \end{equation}
+mit den angegebenen Werten\\
+\begin{center}
+ \begin{tabular}{|c|c|c|}
+ 	
+ 	\hline 
+ Symbol	& Wert &  Einheit\\ 
+ 	\hline 
+ 	\hline
+ c$_{\Phi}$	& 8*10$^{-2}$ & Nm/A \\ 
+ 	\hline 
+ c$_{I}$	& 1.2 & Vs/A  \\ 
+ 	\hline 
+ R	&2*10$^{3}$  & $\Omega$ \\ 
+ 	\hline 
+ $\Phi$	& 0.64*10$^{-5}$ & kgm$^{2}$/rad  \\ 
+ 	\hline 
+ c$_{F}$	& 6*10$^{-4}$  & Nm/rad \\ 
+ 	\hline 
+ \end{tabular}\\
+\end{center}
+Diese Übertragungsfunktion und die Differentialgleichung werden nun als \textbf{Simulink} Modell implementiert, um weitere Simulationen ausführen zu können.
+
+
+\subsection{Simulink Modell}	
+
+Als Vorüberlegung zur Modellierung können aus der Übertragungsfunktion noch einige wichtige Eigenschaften gewonnen werde, die eine Vorstellung der erwartbaren Ergebnisse liefern.\\
+Die stationäre Verstärkung ergibt sich aus 
+\[  G(s=0) = {\frac{c_\Phi}{R* \Phi}} = 6.25 \]
+Durch die Lage der Polpaare kann die Schwingungsneigung abgeschätzt werden. In \textbf{MatLab} kann mithilfe des Ausdrucks \textbf{[r,p,k] = residue(b,a)}, mit b als Zähler und a als Nenner, das Polpaar ermittelt werden.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.4\textwidth]{images/pole.png}
+	\caption{Die Polberechnung in Matlab für die Übertragungsfunktion G(s)}
+	%\label{w}
+\end{figure}
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/pollage.png}
+	\caption[Pollage und Signalverlauf]{Pollage und Signalverlauf\footnotemark} 
+	\label{pollage}
+\end{figure}
+\footcitetext[vgl.][Abruf am 21.08.2018]{hoch}
+Aufgrund der Grafik \ref{pollage} kann man die Schwingneigung schon recht präzise abschätzen. 			
+Im vorliegenden Fall wird eine abklingende Schwingung beschrieben und entspricht somit der Vorstellung eines gedämpften Schwingungssystems\footcite[vgl.][Abruf am 18.08.2018]{hoch}.\\
+Die Pole der Übertragungsfunktion \textbf{G(s)} lassen zusätzlich Rückschlüsse auf die Stabilität des Systems zu. Da alle Pole $\alpha_{n}$ einen negativen Realteil $Re(\alpha_{n}) < 0$~besitzen, ist das System asymptotisch stabil.\\
+\\
+Im weiteren Verlauf wird das \textbf{Simulink} Modell eingeführt.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/angabenWerte.png}
+	\caption{Werte aus der Angabe und Hilfsgrößen}
+	\label{werte}
+\end{figure}
+Das Modell wirdim Zeitbereich mit der Differentialgleichung und im Laplace Bereich mithilfe der Übertragungsfunktion modelliert. Am Ende wird ein Vergleich dieser zwei Methoden gezeigt, wobei das Ergebnis exakt identisch ist. Im weiteren Verlauf wird das Laplace Modell benutzt.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.90\textwidth]{images/simulink_Gs.png}
+	\caption{modellierte Übertragungsfunktion G(s) in Simulink mit Hilfsgrößen}
+	\label{simu}
+\end{figure}
+Die Übertragungsfunktion wurde in Formel \ref{laplace} auf S. \pageref{laplace} schon vorgestellt. Unter Verwendung der Hilfsvariablen $b_{0},~a_{0}$~und $a_{1}$~ergibt sich das Modell in Abb.\ref{simu}.
+Im nächsten Kapitel wird damit die Simulation durchgeführt. Die durch verschiedene Integrationsverfahren und unterschiedlichen Schrittweiten erzielten Ergebnisse werden verglichen und ein passendes Integrationsverfahren wird ausgewählt.
+
+\subsection{Variation der Modell Parameter}
+Bei der Lösung von Differentialgleichungen stößt man schnell an Grenzen. Die Integration in der Mathematik besitzt im Gegensatz zu den meisten anderen Bereichen wie Differentiation oft keine exakt bestimmbare Lösung. Oftmals muss daher auf numerische Lösungsansätze zurückgegriffen werden.\\
+Diese Probleme sind schon sehr alt und es gibt viele unterschiedliche Verfahren. Durch den Einsatz von Software und Computern konnten viele Verfahren erweitert und verbessert werden, da Rechner in der Lage sind, sehr viele Berechnungen in kurzer Zeit durchzuführen.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/int.png}
+	\caption[Grafik für verschiedene Arten von Integrationsverfahren]{Grafik für verschiedene Arten von Integrationsverfahren\footnotemark}
+	%\label{simu}
+\end{figure}
+\footcitetext[vgl.][Abruf am 21.08.2018]{int}
+Aus der Grafik kann man verschiedene Einteilungen der Integrationsverfahren entnehmen. Im der folgenden Simulation wird das Euler Verfahren als direktes und das Heun, bzw. das Runge Kutta als rekursive Verfahren ausgewählt.\\
+Die unterschiedlichen Verfahren der numerischen Integration lassen sich nach den zugrundeliegenden Prinzipien unterscheiden. Es gibt äquidistante oder variable Schrittweiten, Einschritt- oder Mehrschrittverfahren und explizite oder implizite Verfahren. Bei einem Verfahren mit variablen Schrittweiten  wird abhängig von der Modelldynamik die Schrittweite variabel gestaltet. Bei kleinen Änderungen führt das zu großen Schritten, bei schnellen Änderungen zu sehr kleinen. Damit sind höhere Auflösungen bei kleinerer Rechenleistung möglich.\\
+Bei Einschrittverfahren wird zur Berechnung von Näherungswerten immer nur eine festgelegte Stützstelle benutzt, wohingegen bei Mehrschrittverfahren auf vorherige, berechnete Stützstellen zusätzlich zurückgegriffen wird. Bei sehr komplexen Berechnungen kann sich das schnell als sinnvolle Methode erweisen, um Rechenleistung zu sparen.\\
+Explizite Verfahren bezeichnen die Tatsache, dass der zu ermittelnde Approximationswert nur auf der linken Seite in der zugrunde liegenden Rekursionsformel vorhanden ist. Beim impliziten Verfahren ist der Wert auch auf der rechten Seite existent. Um dafür eine Lösung zu finden, muss erst mit numerischen Verfahren die Bestimmung der Nullstellen gemacht werden\footcite[vgl][S. 54]{simu}.
+\\
+\\
+Das \textbf{Euler Verfahren}~(ode1), auch Polygonzugverfahren genannt, ist ein explizites Einschrittverfahren mit konstanter Schrittweite. Es ist ein schon lange bekanntes und einfaches Verfahren, welches jedoch recht ungenau und schnell instabil wird\footcite[vgl.][S. 55 \psq]{simu}.\\
+Für jeden Zeitschritt der Lösungskurve wird eine berechnete Tangente angelegt, womit die Lösung zum nächsten Zeitschritt approximiert wird. Daraus resultiert für jeden Schritt ein Fehler. Bei schnellen Änderungen und Schwingung kann der Ansatz zu unkontrollierbaren Aufschaukeln führen, was in realen Systemen nicht zwangsläufig auftreten muss. Mit einer drastisch niedrigeren Schrittweite sind die Fehler in den Griff zu bekommen, jedoch erhöht sich die erforderliche Rechenleistung unverhältnismäßig.\\
+\\
+Das \textbf{Heun Verfahren}~stellt einen rekursiven Ansatz dar. Das Verfahren ist immer noch recht einfach, verwendet im Gegensatz zum expliziten Euler jedoch ein Trapez zur Näherung. Durch mehrfaches Ausführen der Schritte kann man sich dem Arbeitspunkt immer genauer annähern. Dadurch steigt die Stabilität deutlich an, während gleichzeitig der Fehler deutlich minimiert werden kann.\\
+\\
+Auch das \textbf{Runge-Kutta-Verfahren 4. Ordnung}~(ode4) ist ein rekursives, explizites Einschritt Verfahren. Neben den Steigungen an den Intervallenden werden noch zusätzliche Tangenteninformationen innerhalb eines abgegrenzten Intervalls abgegriffen. Durch die Benutzung von vier Taylor Polynomen kann das Verfahren den lokalen Fehler auf die Ordnung ($\triangle$~t)$^{5}$ begrenzen. Damit erhöht sich die Genauigkeit auch bei höheren Schrittweiten dramatisch, während die Rechenzeit durch eine variable, höher gewählte Schrittweite oft noch gesenkt werden kann.\\
+\\
+Im ersten Versuch der Simulation mit dem \textbf{Euler} Integrationsverfahren und fester Schrittweite bei 0.1 zeigt sich, dass diese Einstellung völlig ungeeignet ist. In der Abb. \ref{pollage} wurde schon festgehalten, dass eine abklingende Funktion zu erwarten ist. Das gezeigte Aufschaukeln ist nur mit groben Fehlern des Integrationsverfahrens erklärbar. Dieses Verhalten wurde schon in der Kapitel Einleitung thematisiert.
+\begin{figure} [htb]
+	\subfigure[Euler (fixe Schrittweite 0.1)]{\includegraphics[width=0.48\textwidth, height = 100px]{images/1try_sfix_stepsize_01_Euler.png}} 
+	\subfigure[Heun (fixe Schrittweite 0.1)]{\includegraphics[width=0.48\textwidth, height = 100px]{images/2try_sfix_stepsize_01_heun.png}} 
+	%\caption{Titel unterm gesamten Bild} 
+\end{figure}
+\begin{figure} [htb]
+	\subfigure[Runge-Kutta-4 (fixe Schrittweite 0.1)]{\includegraphics[width=0.48\textwidth, height = 100px]{images/3try_sfix_stepsize_01_rugekutta.png}} 
+	\subfigure[Euler (fixe Schrittweite 0.05)]{\includegraphics[width=0.48\textwidth, height = 100px]{images/3_1Euler_StepsizeFix001.png}} 
+	%\caption{Titel unterm gesamten Bild} 
+\end{figure}   
+Im Gegensatz dazu zeigt das \textbf{Heun Verfahren} schon deutlich bessere Resultate. Der erwartete Verlauf für eine gedämpfte Schwingung ist schon deutlich erkennbar. Wie erwartet zeigt das \textbf{ Runge-Kutta-4 Verfahren} bei großen Schrittweiten das beste Resultat. Auffällig ist jedoch, wie deutlich das \textbf{Euler Verfahren} abfällt. Sogar mit fünfmal höherer Schrittweite von 0.05 überhöht es die Werte noch deutlich und schafft die Schwingung nicht richtig zu simulieren. Als Konsequenz wird das \textbf{Euler Verfahren} eliminiert und nicht weiter betrachtet.
+\begin{figure} [htb]
+	\subfigure[Heun (fixe Schrittweite 0.05)]{\includegraphics[width=0.48\textwidth, height = 100px]{images/heunfix005.png}} 
+	\subfigure[Runge-Kutta-4 (fixe Schrittweite 0.05)]{\includegraphics[width=0.48\textwidth, height = 100px]{images/rungfix005.png}} 
+	%\caption{Titel unterm gesamten Bild} 
+\end{figure}  
+Bei einer festen Schrittweite von 0.05 zeigen sowohl das \textbf{Heun-} wie auch das \textbf{ Runge-Kutta Verfahren} schon sehr ordentliche Ergebnisse. Beide Kurven sind noch nicht komplett abgerundet, aber zeigen ohne Werte keine erkennbaren Unterschiede mehr. Interessant wäre in diesem Fall die benötigte Rechenzeit, dort sollte in diesem Fall das  \textbf{Heun Verfahren} die Nase vorne haben.
+\begin{figure} [htb]
+	\subfigure[Dormand-Prince (variable max.Schrittweite 0.1)]{\includegraphics[width=0.48\textwidth, height = 100px]{images/rungevariabl01.png}} 
+	\subfigure[Bogacki-Shampine (max. Schrittweite 0.1)]{\includegraphics[width=0.48\textwidth, height = 100px]{images/boga.png}} 
+	%\caption{Titel unterm gesamten Bild} 
+\end{figure}
+Das \textbf{Dormand-Prince Verfahren} ist ein explizites Einschritt \textbf{Runge-Kutta-Verfahren}. Als variables Schrittverfahren wird es in der Praxis fast immer die Nase vorne haben und wird von \textbf{Simulink} als Standard vorgeschlagen. Es zeigt auch bei einer max. Schrittweite von 0.1 schon recht annehmbare Ergebnisse an. Dennoch ist in der vorliegenden Simulation das \textbf{Bogacki-Shampine-Verfahren} nochmals deutlich überlegen. Es basiert auch auf einem expliziten \textbf{Runge-Kutta-Verfahren}, wird aber als nochmals genauer beschrieben von der \textbf{MatLab Hilfe}.\\
+Aufgrund der genannten Vorteile wird das\textbf{Bogacki-Shampine-Verfahren} zur Lösung der Differentialgleichung des Drehspulenmessgeräts verwendet. 
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/final.png}
+	\caption{Bogacki-Shampi mit variabler max. Schrittweite von 0.01}
+	\label{final}
+\end{figure}
+Mithilfe der Übertragungsfunktion 
+\begin{equation}\label{laplace}
+G(s) = \frac{A(s)}{U(s)}= \frac{\frac{c_{\Phi}}{R*\Phi}}{s^{2}+\frac{c_{\Phi}*c_{i}}{R*\Phi}*s+\frac{c_{F}}{\Phi}} 
+\end{equation}
+und dem Vergleich zu
+\begin{equation}\label{laplace}
+G(s) = \frac{Y(s)}{U(s)}= \frac{K}{T^{2}*s^{2}+2*D*T*s+1} 
+\end{equation}
+ergibt sich die Dämpfung zu \textbf{D} = 0.3872 und die Periodendauer zu T = 0.7039s. Ein Vergleich mit dem Modell bestätigt diese Werte als plausibel. Im eingeschwungenen Zustand ist bei \\
+5 Volt Eingangsspannung der Wert 0.3338 als Sprungantwort ablesbar. Die Tabelle zeigt die Umrechnungswerte.
+\begin{center}
+\begin{tabular}{|c|c|c|}
+	\hline 
+	Eingangspannung & Winkel [RAD] & Winkel [Grad]\\
+	\hline 
+	
+	\hline 
+	5 Volt & 0.3338  & 19.125  \\  
+	\hline 
+	1 Volt & 0.0668  & 3.825  \\
+	\hline 
+
+\end{tabular}
+\end{center}
+Zur Validierung der Übertragungsfunktion erfolgt noch eine Gegenüberstellung mit dem Simulink Modell im Zeitbereich.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.8\textwidth, height = 180px]{images/vergleich_zeitberiech_Laplace_rungekutta_max02.png}
+	\caption{Modell der Übertragungsfunktion und im Zeitbereich}
+%	\label{final}
+\end{figure}
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/vergleich_zeitberiech_Laplace_rungekutta_max001_ode23tb.png}
+	\caption{Gegenüberstellung der Übertragungsfunktion und Zeitbereich Modell}
+	%\label{final}
+\end{figure}
+\newpage
+\section{Kritische Reflexion}
+Mit unterschiedlichen Methoden wurde versucht, das Modell zu validieren (Berechnung Dämpfung, Periodendauer, Vergleich Zeitmodell mit Übertragungsfunktion). Dennoch bleiben Zweifel bestehen, ob die gewählte Eingangsgröße richtig ist.\\
+Bei der Berechnung des Zeitverhaltens eines $PT_{2}$-Gliedes aus der Übertragungsfunktion \textbf{G(s)} wird gewöhnlich für normierte Eingangsignale \textbf{U(s)} durchgeführt. Zur Berechnung der Sprungantwort mittels der Übertragungsfunktion wird der Term dann mit 1/s multipliziert, da ansonsten die Impulsantwort ermittelt wird.\\
+Dann bleibt in der vorliegenden Simulation aber unklar, warum die Simulation in der DGL-Form und der Übertragungsform identisch ist.\\
+Um diese Frage in MatLab numerisch zu lösen, werden mit den folgenden Befehlen
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/step.png}
+	%\caption{Gegenüberstellung der Übertragungsfunktion und Zeitbereich Modell}
+	%\label{final}
+\end{figure}
+die Sprung und die Impulsantwort erstellt.
+\begin{figure} [htb]
+	\subfigure[Impulse Response in MatLab]{\includegraphics[width=0.5\textwidth, height = 80px]{images/impulseres.png}} 
+	\subfigure[Step Response in MatLab]{\includegraphics[width=0.5\textwidth, height = 080px]{images/stepres.png}} 
+	%\caption{Titel unterm gesamten Bild} 
+\end{figure}
+Auch dort liefert die Step Response die Ergebnisse, die mit den bereits gewonnenen Erkenntnissen in Einklang sind.
+\section{Fazit}
+
+Das vorliegende Assignment beschäftigt sich mit der Simulation eines Drehspulenmesswerks. Nach den Grundlagen, der DGL und einer Einführung in \textbf{MatLab} und \textbf{Simulink} werden Simulationen durchgeführt mit variierenden Parametern.\\
+Das Softwarepaket \textbf{MatLab} und \textbf{Simulink} sind außerordentlich umfangreich. Die Möglichkeiten zur Simulation und numerischen Integration sind quasi grenzenlos. Im Laufe dieser Aufgabe lernt man erste Anwendungen kennen, doch im Enddefekt kratzt man nur an der Oberfläche, da das Softwarepaket so mächtig ist. \\
+Ungeachtet dieser Problematik vermittelt die Einarbeitung und Beschäftigung mit Modellbildung und Simulation gute Einblicke. 
+In Eigenregie wird auf jeden Fall weiter daran gearbeitet, um die Erfahrungen mit \textbf{MatLab} und \textbf{Simulink} weiter zu vertiefen und weitere Anwendungsfelder lösen zu können.
+\newpage
+
+\begin{

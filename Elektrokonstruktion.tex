@@ -1,0 +1,345 @@
+\documentclass[12pt,a4paper]{scrartcl}	% siehe <http://www.komascript.de>
+\usepackage{selinput}		% Eingabecodierung automatisch ermitteln …
+\SelectInputMappings{		% … siehe <http://ctan.org/pkg/selinput>
+	adieresis={ä},
+	germandbls={ß},
+}
+\usepackage[left=2.5cm,right=2cm, top=3cm, bottom=3cm]{geometry} %Maße Papier
+\usepackage[ngerman]{babel}% Das Beispieldokument ist in Deutsch,
+\usepackage[T1]{fontenc}   %erweitert Zeichenvorrat bei non E/US
+\usepackage{lmodern} 		%latein moderne Schriftzeichen
+\usepackage{amsmath}		%Mathe Bundle
+\usepackage{xcolor,graphicx}
+\usepackage[onehalfspacing]{setspace} %ermöglicht Zeilenabstand von 1.5 
+\usepackage{listings}
+\usepackage{float}
+\usepackage{wrapfig}
+
+\usepackage[%
+automark,
+headsepline,                %% Separation line below the header
+%  footsepline,               %% Separation line above the footer
+% markuppercase
+]{scrpage2}						%entspricht fanyhdr für KOMA, 
+\automark[subsection]{section} %
+\pagestyle{scrheadings}			%mit scrartcl und unterstrichenen Sections oben
+\usepackage{csquotes}
+\usepackage{subfigure} 
+
+\usepackage[backend=biber,style=authoryear,dashed=false]{biblatex}
+\addbibresource{Literatur.bib}
+\usepackage[pdftex]{hyperref} %muss letzte vor begin document sein
+\hypersetup{colorlinks,%
+	citecolor=black,%
+	filecolor=black,%
+	linkcolor=black,%
+	urlcolor=black}
+
+\begin{document}
+\begin{titlepage}
+%\frontmatter
+	\noindent{Roman Grabichler}\\
+	Immatrikulationsnummer:	2932203\\
+	Schmiedstrasse 5\\
+	83052 Bruckmühl\\
+	RoGrStudium@gmail.com\\
+	\vspace{5cm}
+	
+	\begin{center}
+		{\Huge \textbf{Assignment} }\\ 
+		Modul: ELT25\\
+		\vspace{1cm}
+		\textbf{Thema: CAD Konstruktion mit EPLAN}\\
+				\textbf{ Normgerechte Überarbeitung eines elektrischen Schaltplans }\\
+		Rondellsteuerung und Temperaturüberwachung mithilfe einer SPS Steuerung
+	\end{center}
+	
+	\vspace{6cm}
+	Betreuer: Dr. Hartmut Kühn
+	\vfill Bruckmühl, 28.09.2018
+
+\end{titlepage}
+\newpage
+\tableofcontents
+\newpage
+\clearpage
+\thispagestyle{empty}
+\listoffigures
+\newpage
+
+\clearpage
+\thispagestyle{empty}
+%\listoffigures
+\newpage
+%\listoftables
+%\newpage
+
+\setcounter{page}{1}
+\section{Einleitung}
+Das Modul Elektrokonstruktion (ELT25) beschäftigt sich mit der Computer unterstützten Konstruktion (CAD, \underline{C}omputer \underline{A}ided \underline{D}esign) von technischen Unterlagen für die Elektrotechnik. Die Arbeit der Elektrokonstruktion umfasst die notwendigen Betriebsmittel einer Anlage, diverse Schaltungen und Steuerungen sowie Pläne zur Durchführung der notwendigen Arbeiten. Daraus resultieren Listen und Pläne für die Herstellung, Betrieb und Wartung elektrischer Einrichtungen\footcite[vgl.][S 3]{grund}.\\
+Der Prozess der Erstellung dieser Unterlagen involviert verschiedene Fachbereiche der Technik wie Elektronik, Mechanik, Pneumatik und Fluidtechnik. Diese Kombination erfordert die Beachtung zahlreicher Randbedingen, weshalb das gebündelte Wissen der gesetzlichen Grundlagen, Richtlinien und Normen essentiell ist.\\
+Bei der Erstellung von elektronischen Anlagen ist die Rechnergestützte Konstruktion seit geraumer Zeit selbstverständlich. Die Vorteile ergeben sich aus der automatischen Weitergabe und Vernetzung der eingegebenen Daten. So lassen sich aus einer Zeichnung die Artikeldaten\-, Stücklisten-, Klemmleisten- und SPS-Pläne automatisch erstellen. Damit werden Übertragungs- und Änderungsfehler eliminiert. Zusätzlich können Daten und Pläne besser weiterverwendet, vervielfältigt und verschickt werden.
+Diese und weitere Vorteile der rechnerunterstützten Konstruktion machen EPLAN zu einer logischen Wahl, Schaltpläne und zugehörigen Unterlagen zu erstellen.
+
+
+\subsection{Ziel und Relevanz der Arbeit}
+Im vorliegenden Assignment wird die Überarbeitung eines vorhandenen Schaltplans mit Ausgabe der erforderlichen Listen vorgestellt.\\
+Die Notwendigkeit einer Neukonstruktion ergibt sich durch massive Fehler und Nichteinhaltung von Normen im bestehenden Plan. Zusätzlich fehlen ausgewertete Listen, Betriebsmittelübersichten und ähnliches, um eine vollständige Dokumentation der Arbeit zu gewährleisten. Ziel des Assignments ist folglich, einen fehlerfreien Neuentwurf der Schaltung mithilfe von EPLAN (Education Version 2.7) zu erstellen. 
+
+
+
+\subsection{Grundlagen von CAD Zeichnen}
+Im Mittelpunkt der Konstruktion steht der Entwurfsprozess.
+Das ist ein zyklischer Entwicklungsprozess, der sich iterativ der Lösung annähert, indem die Struktur und Prüfung einer ständigen Detaillierung unterzogen wird.\\
+Die Erstellung der Unterlagen lässt sich in verschiedene Konstruktionsphasen unterteilen.
+In den Normen VDI 2210 und 2221 werden fünf Schwerpunkte zusammengefasst.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.4\textwidth]{img/entwurf.png}
+	\caption[Entwurfsprozess der Konstruktion]{Entwurfsprozess der Konstruktion\footnotemark}
+	%\label{w}
+\end{figure}
+Als Grundlage einer Konstruktion dient stets ein Lastenheft oder eine Aufgabenbeschreibung. Mithilfe der allgemeingültigen Normen und Richtlinien, der Anforderungen des Auftraggebers und wirtschaftlichen Gesichtspunkten wird daraus das erforderliche technische Dokument erstellt \footcitetext[vgl][S. 4]{grund}.\\
+Ein unschätzbarer Vorteil der Computer unterstützten Konstruktion liegt in der erreichbaren Qualität. Durch die Möglichkeit, in kurzer Zeit diverse Varianten zu testen und Ergebnisse zu simulieren wird eine hohe Sicherheit und Fehlerfreiheit erreicht. Auch sind Änderungen schnell und sauber ausführbar. Folglich erhöht sich der Anteil an Reproduzierbarkeit und der Aufwand bei weiteren Projekten wird minimiert\footcite[vgl.][S. 23]{leiter}.
+
+\section{Rondellsteuerung und Temperaturüberwachung mithilfe einer SPS Steuerung}
+Die Aufgabenstellung für die Konstruktion und Realisierung umfasst eine Temperaturüberwachung der Fertigteile einer Schweißanlage, die Steuerung einer Depotstation mit Drehteller und einer Anzeige für diverse Zustände, Zähler und Fehlerauswertung einer angeschlossenen Prüfanlage.\\
+Die Temperaturüberwachung wird durch ein Infrarotmessgerät ausgeführt, die Fehlerauswertung erfolgt in der SPS Steuerung. Durch abgreifen verschiedener Endlagenpositionen an der angeschlossenen Prüfanlage wird ein Zähler in der SPS initialisiert, wodurch  eine Bremsklappe und zur Stoßreduzierung und die Depotstation gesteuert werden. Die Fehlerausgabe geschieht als Fehlermeldung am Display und als Leuchtsignal über eine Warnleuchte.
+
+
+
+
+\subsection{Vormaliger Stand der CAD Konstruktion}\label{ex}
+Die Grafiken \ref{bild1} und \ref{bild2} geben den bisherigen Stand wieder.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.9\textwidth, height = 220pt]{img/seite1.png}
+	\caption[Veralteter Stand Konstruktion Seite 1]{Veralteter Stand Konstruktion Seite 1}
+	\label{bild1}
+\end{figure}
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.9\textwidth, height= 200pt]{img/seite2.png}
+	\caption[Veralteter Stand Konstruktion Seite 2]{Veralteter Stand Konstruktion Seite 2}
+	\label{bild2}
+\end{figure}
+Es werden ausgewählte Abweichungen von den Normen und Konventionen aufgezeigt.\\
+Der Schwerpunkt in den folgenden Kapiteln beschäftigt sich mit Lösungsansätzen in EPLAN. Die Konstruktion wird mittels der AKAD Unterlagen auf einen aktuellen Stand der Technik in Bezug auf Normung, Gesetze und Regeln gebracht. Eine nicht zu unterschätzende   Schwierigkeit bei der Konstruktion von Schaltplänen ergibt sich trotz vieler Vorschriften vor allem durch die Vielfalt an Möglichkeiten. Dadurch können sehr viele unterschiedliche Ansätze verwendet werden. Folglich gibt es eine Notwendigkeit, selbst Stile zu entwickeln, zu dokumentieren und dann anzuwenden. Nur so kann innerhalb einer Firma oder Organisation eine Konsistenz entstehen, die Probleme vermeidet, den Arbeitsfluss optimiert und Resultate vergleichbar macht.
+\\
+\\
+Der erste Eindruck des früheren Schaltplans zeigt sofort, dass die gängige Energieflussrichtung nicht eingehalten wurde. Dadurch kreuzen sich unzählige Verbindungen, wodurch ein chaotischer Eindruck entsteht. Die Lesbarkeit leidet sehr stark unter dieser Darstellung und führt zu potentiellen Fehlern. Weiterhin fällt auf. dass der Plan mit viel Grafik und wenig Symbolik aufgebaut wurde. Durch die fehlende Abstraktion sowie keine verteilte Darstellung von komplexen Betriebsmitteln wird jedoch wieder die Verständlichkeit für erfahrenes Personal reduziert. Bei genauerer Betrachtung fallen zahlreiche weitere Mängel auf. Die Betriebsmittelkennzeichnung ist nicht durchgängig, es fehlen Betriebsmitteln bzw. gleichartige Symbole sind unterschiedlich bezeichnet, teilweise sind Anschlusskennzeichnung auch komplett entfallen (siehe Abbruchkanten etc.). Ein weiteres Manko sind die fehlenden Auswertungen von Listen, einer der Hauptgründe, wodurch die Konstruktion mittels CAD System eine so große Verbreitung gefunden hat.\\
+Als Resultat ist der Plan in der bestehenden Form sehr schlecht lesbar, die Darstellung ist inkonsistent und teilweise sind  fehlerhafte Bezeichnungen vorhanden, die ein Arbeiten enorm erschweren, bzw. unmöglich machen. In dieser Form kann keine Realisierung in der Praxis erfolgen.
+%\subsubsection{Abweichungen zur gebräuchlichen Form in der Darstellung  }
+%\subsubsection{Fehlende Klemmleistenliste und SPS Liste}
+%\subsubsection{Mängel in der Zeichnung in Bezug auf die Normung}
+\subsection{Gegenüberstellung des vorherigen Konstruktionsstands mit der aktuellen Arbeit}
+\subsubsection{Allgemeine Konstruktionshinweise}
+Mithilfe mehrerer Gesetzte und Normen (ProdHaftG, GPSG, EnWG, DIN 199-1,\\ \mbox{DIN EN 61082-1}, usw.) wird nach allgemein anerkannten Regeln der Technik konstruiert. Grundsätzlich sind Normen \glqq Empfehlungen\grqq, von denen abgewichen werden kann. Nachweislich muss aber mindestens die gleiche Sicherheit erhalten bleiben und die Beweislast wird umgekehrt, liegt also beim Konstrukteur\footcite[vgl.][S. 10 \psq]{grund}.\\
+Ein elektrischer Schaltplan ist eine Darstellungsart von Betriebsmitteln und deren Zusammenhänge durch grafische, teils genormte Symbole. Es gibt verschiedene Stufen der Abstrahierung, um spezielle Aspekte der Schaltung in den Vordergrund zu rücken. In Übersichtsschaltplan, Funktionsschaltplan oder Stromlaufplan wird in zunehmender Detaillierung der Aufbau einer Schaltung beschrieben\footcite[vgl.][S. 162 \psqq]{pneu}. Weiterhin gibt es unzählige zusätzliche Darstellungsarten und Pläne, die in der Praxis verwendet werden.\\
+Darüber hinaus gibt es grundlegende Gestaltungshinweise, die Format und Faltung betreffen. In der DIN EN ISO 7200 wird ein standardisiertes Schriftfeld sowie Linienarten und -dicke festlegt. Kennbuchstaben und Referenzkennzeichnung für Bauteile und Schaltzeichen sind in der Norm DIN EN 81346-2 beschrieben, dennoch bleibt auch dort sehr viel Spielraum für Firmen interne Regelungen.\\
+Im weiteren Verlauf werden die Angaben immer auf einen Stromlaufplan bezogen, der die wichtigste Planungsunterlage der Elektrotechnik darstellt.
+Ziel des Stromlaufplans ist es demnach, die elektrischen Betriebsmittel einer Anlage und ihr funktionales Zusammenwirken nachvollziehbar zu machen\footcite[vgl.][S. 34 \psqq]{grund}. Der Plan besteht aus den Pflichtbestandteilen:
+\begin{itemize}
+	\item grafische Symbole für die Betriebsmittel
+	\item Verbindungs- und Wirkungslinien
+	\item Anschlusskennzeichnung an den Schaltzeichen
+	\item Kennzeichnungsbuchstaben an Betriebsmitteln
+	\item aussagekräftigem Schriftfeld
+\end{itemize}
+Erweiterbar ist der Plan durch zusätzliche Informationen jeglicher Art, die dem Verständnis dienen, Aufgaben erleichtern und Zusammenhänge klarer machen.\\
+Im Stromlaufplan ist die Energie- oder Signalflussrichtung immer von links nach rechts bzw. oben nach unten. Zur besseren Übersichtlichkeit wird für komplexere Betriebsmittel die verteilte Darstellung bevorzugt. Sehr wichtig ist auch eine saubere, klare und kreuzungsfreie Darstellung von Verbindungen und Leitungen, sodass die Verständlichkeit erhöht wird.
+
+
+\subsubsection{Strukturkennzeichnung}
+
+Die DIN EN 81346 erlaubt eine Aufteilung in unterschiedliche Aspekte, sogenannte Strukturkennzeichen, um die Lesbarkeit zu steigern und in komplexen Projekten die Übersichtlichkeit zu wahren.\\
+\begin{center}
+\begin{tabular}{||c|c||}
+	\hline 
+	\hline
+Vorzeichen	&  Datenstellen\\ 
+	\hline 
+=	& Funktionsaspekt ( z.B. Teilfunktion einer Anlage) \\ 
+	\hline 
+-	& Produktaspekt (Betriebsmittelkennzeichnung) \\ 
+	\hline 
++	& Ortsaspekt (Einbauort) \\ 
+	\hline 
+:	& Anschluss (z.B. an Betriebsmittel) \\ 
+	\hline 
+\end{tabular} 
+\end{center}
+Diese Aufteilung wird wie folgend im Projekt umgesetzt.
+\begin{center}
+\begin{tabular}{||c | c||}
+	\hline 
+	\hline
+\textbf{= Anlage}	& \textbf{+ Einbauort} \\ 
+	\hline 
+	\hline
+1E3 (Einspeisung)	& P3A (Schaltkasten Steuerung)  \\ 
+	\hline 
+1P3 (Steuerung Prüfe)	& P3B (Steuerkasten Rondell)\\ 
+	\hline 
+1I3 (Schweissüberwachung)	& P3C (Antrieb Rondell) \\ 
+	\hline 
+	& P3D (Strom Anschluss) \\ 
+	\hline 
+	& P3E (Prü110)\\ 
+	\hline 
+	& I3A (Schweissanlage) \\ 
+	\hline 
+\end{tabular} 
+\end{center}
+
+\subsubsection{Aufbau des veränderten Stromlaufplans}
+Im Gegensatz zum vorherigen Stand mit der Aufteilung in zwei Seiten und keinerlei Auswertungen wie Artikelstücklisten, Klemmplänen und ähnlichen zeigt Abb. \ref{glied}, die in EPLAN gewählte Aufteilung der Darstellung als Gliederung mit den in EPLAN erzeugten Auswertungen.
+\begin{figure} [htb]
+	\subfigure[]{\includegraphics[width=0.3\textwidth]{img/glied.png}} 
+	\subfigure[]{\includegraphics[width=0.6\textwidth]{img/deckblatt.png}} 
+	
+	\caption{Auswertung EPLAN}
+	\label{glied} 
+\end{figure}
+In EPLAN ist es ein leichtes, mithilfe der automatischen Auswertungen hochwertige Dokumente zu erstellen. Exemplarisch wird das mit der Erstellung des Deckblatts gezeigt.
+Die Gliederung gibt einen guten Überblick über das gesamte Projekt, wobei im Laufe dieses Assignments nicht jeder Aspekt genauer betrachtet werden kann.
+\newpage
+\subsubsection{Einspeisung der Spannung}
+\begin{wrapfigure}[]{r}[0cm]{6cm}
+	\fbox{\includegraphics[width=4cm,angle=0]{img/einspeisung.png}}
+	\caption{Einspeisung}
+	\label{fig:bild}
+\end{wrapfigure}
+Für die Projektseite der Energieeinspeisung wird das Strukturkennzeichen \textbf{=1E3 +P3B} gewählt, da sich der Großteil der Stromversorgung im Rondellschaltkasten abspielt.
+Über die Klemmleiste \mbox{\textbf{-X5}} erfolgt über ein fünf-adriges Kabel die 400V Versorgung. Der Stecker unterliegt einem anderen Ortsaspekt und wird am Strukturkasten deshalb mit \textbf{+P3D} gekennzeichnet.
+Die Netztrenneinrichtung \mbox{\textbf{-Q1}} dient zur Trennung der Anlage vom Stromnetz für Wartungsarbeiten oder Reparaturmaßnahmen.
+\\
+\\
+\\
+\\
+\\
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.4\textwidth]{img/sicherung.png}
+	\caption{Sicherung -F1}
+	
+\end{figure}
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.8\textwidth]{img/motor.png}
+	\caption{Rondell Schaltkasten mit Kondensator Motor}
+	\label{motor}
+\end{figure}
+Die Sicherung \textbf{-F1} dient dem Schutz der Schaltung und ihrer Komponenten. Danach folgt eine Verbindung zurück zur Klemmleiste \mbox{\textbf{-X5}} auf den Anschluss \mbox{\textbf{:1}}. Von dort wird über eine weitere Klemme \mbox{\textbf{-X5:32}} schlussendlich der Kondensatormotor gespeist. Dem Motor, der sich an einem anderen Ortsaspekt \mbox{\textbf{+P3C-M1}} befindet, wird eine Sicherung \mbox{\textbf{-F4}} mit \textit{2 Ampere} vorgeschaltet. Abb. \ref{motor} auf S. \pageref{motor} zeigt, wie der Motor selbst über ein Relais \mbox{\textbf{-KF4}} über die SPS gesteuert wird. Über das Kabel \mbox{\textbf{-W12}} erfolgt die Verbindung des Motors mit dem Steuerkasten.
+Die weitere Verwendung der \textit{400/230 Volt} Spannung erfolgt in einer Starkstromdose sowie einer \textit{230 Volt} Dose. Aus Platzgründen wird hierauf nicht genauer eingegangen.
+\newpage
+
+\subsubsection{Steuerspannung}
+\begin{wrapfigure}[]{l}[-0.5cm]{5cm}
+	\fbox{\includegraphics[width=4.2cm,angle=0]{img/steuer.png}}
+	\caption{Steuerspannung}
+	%\label{fig:bild}
+\end{wrapfigure}
+Aus sicherheitstechnischen und wirtschaftlichen Gründen wird ein Großteil der Betriebsmittel mit \textit{24 Volt} betrieben. Dafür muss mit einem Transformator die eingehende Spannung auf die Nutzspannung von \textit{24V} runtertransformiert werden. Da der Transformator auf der Seite der Spannungseinspeisung untergebracht ist, wird der Funktionskasten des Transformators mit dem sichtbarem Betriebsmittel (BMK) \mbox{\textbf{+P3A-T1}} gekennzeichnet. Hier gibt es die Sicherungen \mbox{\textbf{-F1, F2}}, die als Schutzorgan für den Transformator dienen. Mit der Sicherung \mbox{\textbf{-F3}} wird die Steuerungselektronik vor Überlast geschützt. Mittels der Trennklemme \mbox{\textbf{XTR}} wird das Potential NS und PE kurz geschlossen.
+\\
+\\
+
+\subsubsection{Display und Steuerung mit Gatewaymodul}
+
+Zur Steuerung der gesamten Anlage wird eine \underline{S}peicher \underline{P}rogrammierbare \underline{S}teuerung von Eaton (ehemals Möller) verwendet.
+Das Modell XV-303  ist ein HMI-PLC Kombigerät, dient somit gleichzeitig als Display und SPS in einem Gerät. Mit einem CAN-Feldbus wird das CAN-Modul an der SPS angeschlossen. Im weiteren Verlauf ist die Standard Referenzkennzeichnung \mbox{\textbf{=1P3+P3A}}. Somit werden nur abweichende BMK anders gekennzeichnet.\\
+ Für den Schaltplan sind weitere Details über die Steuerung nicht relevant und werden an dieser Stelle weggelassen.
+
+
+\subsubsection{Analoge Anschlusskarte}\label{analog}
+
+Das Analogmodul ist notwendig für die Integration des Infrarot Messgeräts.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.6\textwidth]{img/analog.png}
+	\caption{Analog Modul der Steuerung für Infrarot Messgerät}
+	
+\end{figure}
+Das Messgerät gibt den Wert der Stromstärke zwischen \textit{4} und \textit{20mA} zurück. Im Analogmodul \mbox{\textbf{-K2}} wird daraus ein Wert zwischen \textit{4000} und \textit{20 000} erzeugt, der in der SPS in einen Temperaturwert umgerechnet wird. Die Spannung für das Modul wird aus dem Transformator über die Klemmleiste \mbox{\textbf{-X1}} entnommen. Über ein speziell geschirmtes Kabel \mbox{\textbf{-W8}} wird das Infrarotmessgerät angeschlossen und in der Schweißanlage untergebracht. Die weiteren Anschluss Details folgen im Kapitel \ref{ir} auf S. \pageref{ir}.
+
+
+\subsubsection{Digitale Anschlusskarte, Inputs}
+Über die Abbruchkanten \mbox{\textbf{-LS}} und \mbox{\textbf{-NS}} wird die Spannungsversorgung der Karte vorgenommen.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.76\textwidth]{img/Steuerung_DIO.pdf}
+	\caption{Digitale Anschlusskarte mit acht Inputs}
+	
+\end{figure}
+Der SPS Kasten der Digitalen Anschlusskarte wird mit \mbox{\textbf{-K1}} als Binärelement gekennzeichnet\footcite[vgl.][S. 42]{grund}. Die verschiedenen physikalischen Eingangsadressen der Karte werden mit den der Programmierumgebung entsprechenden Symbolen und Erklärungen versehen. Dabei bedeutet \mbox{\textbf{IX4.0}} das erste Bit des WORD Datentyps.\\
+Interessant ist im Strompfad 2 der Signalabgriff aus einer anderen Steuerung. Es wird die Betätigung eines Zylinderendschalters einer weiteren Prüfvorrichtung als Zähler für die hier beschriebene SPS benutzt. Die alte Steuerung der Prüfvorrichtungen besitzt einen eigenen Stromkreis mit Netzteil und anderem Nullpotential. Dieses Signal kann daher nicht einfach in den weiteren Stromkreis überführt werden, sondern muss getrennt über ein Relais  \mbox{\textbf{+P3E-KF1}} geführt werden. Die Bezeichnung \mbox{\textbf{+P3E-NA}} soll verdeutlichen, dass der Signalabgriff aus einer unbekannten Quelle kommt, die hier keine weitere Rolle spielt. In den Strompfaden 3 bis 5 werden Digitale Eingänge und die Potentiale \mbox{\textbf{LS, NS}} über einen Hartingstecker und die Verbindung \mbox{\textbf{-W5}} an die Rondellsteuerung weitergegeben. Die Inputs 4 und 5 sind Zylinderendschalter, die am Zylinder der Bremsklappe die Endlagen überwachen und an die SPS weitergeben. 
+
+\subsubsection{Digitale Anschlusskarte, Outputs mit IR Gerät}\label{ir}
+\begin{wrapfigure}[]{r}[0cm]{5cm}
+	\fbox{\includegraphics[width=4.5cm,angle=0]{img/anschluss_ir.png}}
+	\caption{Anschlussplan}
+	\label{anschlussplan}
+\end{wrapfigure}
+Das Infrarot Messgerät zur Überwachung der Schweißtemperatur wird mit dem sichtbarem BMK \mbox{\textbf{=1I2+I3A-B1}} gekennzeichnet, da es sich in dem Ultraschallschweißgerät befindet. Der Anschlussplan in Abb. \ref{anschlussplan} zeigt wie die Verdrahtung ausgeführt werden muss. Dafür wird über das bereits erwähnte Kabel \mbox{\textbf{-W8}} an \textit{Loop+} eine \textit{24V} Spannung bereitgestellt. An \textit{Laser+} und \textit{Laser-} wird über den Digitalen Ausgang 9 (physikalisch Q4.0) und dem \mbox{\textbf{-NS}} Potential ein geschlossener Stromkreis erzeugt, wodurch das Laservisier des IR-Geräts über das HMI schaltbar ist. An den Anschluss \textit{Loop-} kommt über die Klemme \mbox{\textbf{-X3:1}} der in \mbox{Kapitel \ref{analog}} bereits erwähnte Analoge Eingang 1+ (physikalisch IW0).
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.76\textwidth]{img/Steuerung_DIO_Outputs.pdf}
+	\caption{Digitale Anschlusskarte mit acht Inputs}
+	
+\end{figure}
+Über die Ausgänge 11 und 12 der DIO-Karte wird eine Statuslampe für die Anlage angesteuert, die aus einer Rot-Grün Ampel besteht. Der Strukturkasten ist der Kennzeichnung \mbox{\textbf{=1I3+I3A}} zugeordnet mit den Lampen \mbox{\textbf{-P1}} und \mbox{\textbf{-P2}}. Im Stromlaufpfad 6 kommt wieder ein Relais zum Einsatz, um einen Strom mit anderem Potential zu schalten. Das Relais \mbox{\textbf{=1I3+I3A-KF3}} dient der Unterbrechung des Schweißstartknopfs. Aufgrund der Temperatur Überwachung mit dem Infrarotmessgerät kann durch eine Logik Verarbeitung in der SPS bei Überschreitung eines festgelegten Limits eine Sperre der Schweiße ausgelöst werden. Dies dient nicht der Bediener Sicherheit, sondern ausschließlich der Qualitätsüberwachung.\\
+Der Output 15 wird über die Klemmleiste \mbox{\textbf{-X4:5}} auf den Hartingstecker \mbox{\textbf{-X6:1}} gelegt. Als Folge wird über diesen Ausgang der Rondellmotor von der SPS Steuerung betätigt.\\
+Der Ausgang 16 (physikalisch QX4.7) steuert über ein separates Kabel \mbox{\textbf{-W11}} ein federrückgestelltes 5/3 Wegeventil an. Der Ortsaspekt für das Ventil ist \mbox{\textbf{+P3E-MB1}} und steuert den Zylinder an, der die Bremsklappe für die Fertigteile betätigt. Auf einen Pneumatikplan wird an dieser Stelle verzichtet.
+
+
+\section{Auswertung der Listen mit EPLAN}
+
+Damit in der Praxis die Anlage bzw. die Verdrahtung korrekt ausgeführt werden kann, besteht nach der Konstruktion des Stromlaufplans die Notwendigkeit, diverse Listen mit EPLAN auszugeben.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\textwidth]{img/inhalt.png}
+	\caption{Auszug Inhaltsverzeichnis}
+	
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\textwidth]{img/stuck.png}
+	\caption{Auszug Stückliste}
+	
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\textwidth]{img/sps.png}
+	\caption{Auszug SPS Übersicht}
+	
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\textwidth]{img/klemm.png}
+	\caption{Auszug Klemmenplan}
+	
+\end{figure}
+Die Anforderungen an die Listen ergeben sich durch das Projekt, Konventionen in der Firma und Wissensstand der Mitarbeiter.
+In Abstimmung mit beteiligten Abteilungen können von EPLAN automatisch Listen erstellt werden, die Übertragungsfehler ausschließen und Änderungen leichter möglich machen, da die Korrekturen nur an einer zentralen Stelle erfolgen müssen. Anschließende Aktualisierung der Listen bringt die gesamte Dokumentation auf einen aktuellen, durchgängigen Stand.\\
+Beispielhaft sind Auszüge aus Listen aufgeführt, die in dem Projekt erstellt wurden.
+\newpage
+\section{Kritische Reflexion}
+
+Mit großem Aufwand wurde ein bestehender Schaltplan mit EPLAN überarbeitet. Ersichtliche Probleme des bestehenden Plans bezüglich Normung, aber auch bei der Darstellung und Übersichtlichkeit sollen verbessert werden. Weiterhin erfolgt mit EPLAN eine Auswertung des Stromlaufplans hinsichtlich verschiedener gebräuchlicher Listen wie Stückliste und SPS-Belegung. Für die Darstellung und übliche Symbolik bei der elektrotechnischen Konstruktion wurden die AKAD Unterlagen als  Referenz benutzt\footcite[vgl.]{CAD}.
+Sehr viele Verbesserungen und Optimierungen konnten plangemäß umgesetzt werden. Die Lesbarkeit des Plans hat sich dadurch enorm verbessert.\\
+Dennoch müssen im Rahmen des Assignments viele Abstriche in Bezug auf Details gemacht werden. Um einen gewissen Zeitrahmen halten zu können, musste die Ausarbeitung an vielen Stellen eingeschränkt werden. Die Artikeldatenbank ist nur teilweise ausgefüllt, da manche Artikel im Nachhinein nicht mehr feststellbar sind und der Aufwand immens ist. Des weiteren gibt es auch einige technische Schwierigkeiten, da EPLAN ohne vorherige Erfahrung in der elektrischen Konstruktion, ein so umfassendes und dadurch auch komplexes Programm zur Verfügung stellt, weswegen es in der kurzen Zeit unmöglich ist, die ganze Bandbreite an Möglichkeiten auszuschöpfen. Vielmehr verwirren die zahllosen Möglichkeiten in gewissen Fällen und bremsen so die Konstruktion.\\
+Große Probleme ergeben sich auch durch komplexe Betriebsmittel, die keine feste Symbolik haben, sondern in der Literatur überall verschieden gezeichnet und bezeichnet werden. Dadurch fällt es sehr schwer, die Konsistenz im Schaltplan zu erhalten.
+
+
+\section{Fazit}
+
+Schlussendlich ist das Fach Elektrokonstruktion ein sehr spannendes und hilfreiches Modul. Die gestellte Aufgabe stellte sich im Nachhinein als sehr anspruchsvoll heraus. Das führte zu weit mehr investierter Zeit als Anfangs veranschlagt. Dennoch sind die dabei gewonnenen Erkenntnisse sehr interessant, da bisher die Erfahrung mit Elektrokonstruktion komplett gefehlt hat.\\
+Schlussendlich fehlt aber noch immer sehr viel Übung und Knowhow, um selbständig komplexe Schaltungen erfassen und als Schaltplan umsetzten zu können.   
+
+\newpage
+\printbibliography
+
+
+
+
+\end{document}

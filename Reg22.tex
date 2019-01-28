@@ -1,0 +1,489 @@
+\documentclass[12pt,a4paper]{scrartcl}	% siehe <http://www.komascript.de>
+\usepackage{selinput}		% Eingabecodierung automatisch ermitteln …
+\SelectInputMappings{		% … siehe <http://ctan.org/pkg/selinput>
+	adieresis={ä},
+	germandbls={ß},
+}
+\usepackage[left=2.5cm,right=2cm, top=3cm, bottom=3cm]{geometry} %Maße Papier
+\usepackage[ngerman]{babel}% Das Beispieldokument ist in Deutsch,
+\usepackage[T1]{fontenc}   %erweitert Zeichenvorrat bei non E/US
+\usepackage{lmodern} 		%latein moderne Schriftzeichen
+\usepackage{amsmath}		%Mathe Bundle
+\usepackage{xcolor,graphicx}
+\usepackage[onehalfspacing]{setspace} %ermöglicht Zeilenabstand von 1.5 
+\usepackage[%
+automark,
+headsepline,                %% Separation line below the header
+%  footsepline,               %% Separation line above the footer
+% markuppercase
+]{scrpage2}						%entspricht fanyhdr für KOMA, 
+\automark[subsection]{section} %
+\pagestyle{scrheadings}			%mit scrartcl und unterstrichenen Sections oben
+\usepackage{csquotes}
+\usepackage{subfigure} 
+
+\usepackage[backend=biber,style=authoryear,dashed=false]{biblatex}
+\addbibresource{Literatur.bib}
+\usepackage[pdftex]{hyperref} %muss letzte vor begin document sein
+\hypersetup{colorlinks,%
+	citecolor=black,%
+	filecolor=black,%
+	linkcolor=black,%
+	urlcolor=black,%
+	pdftex}
+
+\begin{document}
+\begin{titlepage}
+%\frontmatter
+	\noindent{Roman Grabichler}\\
+	Immatrikulationsnummer:	2932203\\
+	Schmiedstrasse 5\\
+	83052 Bruckmühl\\
+	RoGrStudium@gmail.com\\
+	\vspace{5cm}
+	
+	\begin{center}
+		{\Huge \textbf{Assignment} }\\ 
+		Modul: Reg22\\
+		\vspace{1cm}
+		\textbf{Thema:}\\
+		\textbf{\large{Laborbericht Regelungstechnik}}\\
+	
+	\end{center}
+	
+	\vspace{6cm}
+	Betreuer: Prof. Dr. -Ing. Heidrich
+	\vfill Pforzheim, 28.09 - 29.09.2017
+
+\end{titlepage}
+\newpage
+
+\clearpage
+\thispagestyle{empty}
+
+\tableofcontents
+\newpage
+\clearpage
+\thispagestyle{empty}
+\listoffigures
+\newpage
+%\listoftables
+%\newpage
+
+\setcounter{page}{1}
+\section{Einleitung}
+Im Rahmen einer Laborveranstaltung Regeltechnik in Pforzheim wurden verschiedene Aspekte der Regeltechnik genauer beleuchtet und praktisch geübt.\\
+Voraussetzung für die Teilnahme waren ein verpflichtender Online Test, sowie das Erledigen von Versuch eins und zwei aus dem Studienheft \glqq Regelungstechnik Labor\grqq.
+Der in vier Hauptthemen unterteilte Präsenz Labor Termin wurde von Prof. Dr. -Ing. Heidrich und Herr Hanaka geleitet.
+Eine intensive Vorbereitung mit den Versuchen wurde vorausgesetzt und durch die vorbereitete Heimarbeit auch geprüft.\\
+Am Tag eins wurde die Bedienung mit MATLAB und SIMULINK anhand der Modellierung eines Masse-Feder-Dämpfer-Systems geübt und der Bestimmung des daraus resultierenden Frequenzgangs.
+Am zweiten Tag schloss sich die Positionsregelung eines Masse-Feder-Dämpfer-Systems und dessen Auswertung an.\\
+Basierend auf den erarbeiteten Themen wird ein wissenschaftliches Assignment erstellt, worin die Versuche und erarbeiteten Lösungen aufbereitet werden.
+
+\section{Versuch 1: Inbetriebnahme der Simulink MATLAB Umgebung}
+\subsection{Screenshot des Simulink Modells}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=.95\textwidth]{2.3/SimulinkModel.JPG}
+	\caption[Simulink Modell]{Simulink Modell} 
+\end{figure}
+\clearpage
+\subsection{Screenshot der Parametrierung des Oszilloskops}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=.75\textwidth]{2.3/ossz.JPG}
+	\caption[Oszilloskop Parametrierung]{Oszilloskop Parametrierung} 
+\end{figure}
+\subsection{Screenshot der Vorgabe der maximalen Schrittweite hmax}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=.85\textwidth]{2.3/Schrittweite.JPG}
+	\caption[Vergabe maximale Schrittweite bei variabler Einstellung]{Vergabe maximale Schrittweite bei variabler Einstellung} 
+\end{figure}
+\subsection{Signalverlauf im Simplot Fenster für den Zeitbereich zwischen 1,2 bis 2,2s}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=.85\textwidth]{2.3/SignalOszi.JPG}
+	\caption[Sinus Signal in definiertem Zeitbereich]{Sinus Signal in deifniertem Zeitbereich} 
+\end{figure}
+\section{Versuch 2: Gleichfrequente Schwingungen}
+\subsection{Lösung zu \glqq 5.3 Aufgabenstellung a)\grqq}
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=.65\textwidth]{2.3/ber.JPG}
+	\caption[Berechnung der Variablen aus dem Oszilloskopbild]{Berechnung der Variablen aus dem Oszilloskopbild} 
+\end{figure}
+\clearpage
+\subsection{Lösung zu \glqq 5.3 Aufgabenstellung b)\grqq}
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=.85\textwidth]{2.3/V2Grafik_I.JPG}
+	\caption{Oszilloskopbild mit errechneten Werten aus a)} 
+\end{figure}
+\begin{figure}[bht]
+	\centering
+	\includegraphics[width=.55\textwidth]{2.3/V2Oszi_I.JPG}
+	\caption{Simulink Modell mit errechneten Werten aus a)} 
+\end{figure}
+\clearpage
+\subsection{Lösung zu \glqq 5.3 Aufgabenstellung c)\grqq}
+\begin{figure}[thb]
+	\centering
+	\includegraphics[width=.75\textwidth]{2.3/V2Grafik_II.JPG}
+	\caption{Oszilloskopbild zu y(t) + x(t) und y(t) - x(t)} 
+\end{figure}
+\begin{figure}[bh]
+	\centering
+	\includegraphics[width=.55\textwidth]{2.3/V2Oszi_II.JPG}
+	\caption{Simulink Modell zu y(t) + x(t) und y(t) - x(t)} 
+	\end{figure}
+\clearpage
+\subsection{Lösung zu \glqq 5.3 Aufgabenstellung d)\grqq}
+\begin{figure}[thb]
+	\centering
+	\includegraphics[width=.85\textwidth]{2.3/V2Grafik_III.JPG}
+	\caption{Oszilloskopbild zur Integration } 
+\end{figure}
+\begin{figure}[bh]
+	\centering
+	\includegraphics[width=.85\textwidth]{2.3/V2Grafik_IV.JPG}
+	\caption{Oszilloskopbild zur Differentation } 
+	\end{figure}
+\clearpage
+\begin{figure}[thb]
+	\centering
+	\includegraphics[width=.75\textwidth]{2.3/V2Oszi_III.JPG}
+	\caption{Simulink Modell zur Integration und Differentation} 
+\end{figure}
+\clearpage
+\begin{figure}
+	\centering
+	\includegraphics[width=.80\textwidth]{2.3/difintbeweis.JPG}
+	\caption{Analytische Probe zu den erzeugten Graphen} 
+\end{figure}
+\clearpage
+\subsection{Lösung zu \glqq 5.3 Aufgabenstellung e)\grqq}
+\begin{figure}[thb]
+	\centering
+	\includegraphics[width=.95\textwidth]{2.3/V2Grafik_e.JPG}
+	\caption{Oszilloskopbild mit den Verstärkungsfaktoren $2^{-0.5}$ und $1/3^{-0.5}$} 
+\end{figure}
+\begin{figure}[bht]
+	\centering
+	\includegraphics[width=.85\textwidth]{2.3/V2Oszi_e.JPG}
+	\caption{Simulink Modell mit den Verstärkungsfaktoren $2^-0.5$ und $1/3^-0.5$} 
+\end{figure}
+\clearpage
+\subsection{Lösung zu \glqq 5.3 Aufgabenstellung f)\grqq}
+\begin{figure}[bht]
+	\centering
+	\includegraphics[width=.60\textwidth]{2.3/V2Oszi_g.JPG}
+	\caption{Simulink Modell nach Einführung von Variablen} 
+\end{figure}
+\begin{figure}[bht]
+	\centering
+	\subfigure[Variable mit ermittelten Werten aus 5.3 a)]{\includegraphics[width=0.29\textwidth]{2.3/variablenvorher.JPG}} 
+	\subfigure[Variablen mit regelungstechnisch geänderten Werten]{\includegraphics[width=0.29\textwidth]{2.3/variablennacher.JPG}} 
+	%\caption{Titel unterm gesamten Bild} 
+	\end{figure}
+\clearpage
+\section{Versuch 3: Modellierung eines Masse Feder Dämpfer Systems}
+In Versuch drei soll ein einfaches MFDS in Simulink modelliert werden. Das erste Modell wird mit D-Gliedern erstellt, das zweite mathematisch gleichwertig mit I-Gliedern. Daraus sollen die Probleme der verschiedenen Modellierungen abgeleitete und ausgewertet werden.
+\subsection{Modellierung und Simulation des MFDS durch D-Glieder}
+\begin{figure}[bht]
+	\centering
+	\includegraphics[width=.90\textwidth]{6.3/6_3_e_MOdel.JPG}
+	\caption[Simulink Modell aus D-Glieder]{Simulink Modell aus D-Gliedern, erweitert mit einem Signalgeber $F_St(t)$~und einem Oszilloskop zur Darstellung verschiedener Größen}
+\end{figure}
+\begin{figure}[bht]
+	\centering
+	\includegraphics[width=.75\textwidth]{6.3/Errorloopvariablestep.JPG}
+	\caption{Fehlermeldung bei variabler Step Size und Max Step $auto$ Einstellung}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.990\textwidth]{6.3/Errorloopvariablestepeinstellung.JPG}
+	\caption{Einstellungsparameter für die erzeugte Fehlermeldung}
+\end{figure}
+Das Modell wird komplettiert und die Variablen werden festgelegt auf:
+$F_St(t)=10N$, $t_\varepsilon=0,1s$. Gleichzeitig wird die Max Step Size auf $auto$ und der Type auf $Variable-step$ gestellt.\\
+Mit dieser Einstellung kann keine lauffähige Simulation erzeugt werden, da die Arithmetik von MATLAB durch einen Loop den Abbruch erzwingt.\\
+Als zweite Möglichkeit wird die Max Step Size auf $manuelle~Werte$ umgestellt, beginnend bei 0,1s und in Zehnerschritten kleiner werdend.\\ Erst durch einen Trick kann bei 0,0001s eine lauffähige Simulation erzeugt werden. Basierend darauf, dass der Fehler bei ca 0,1s auftaucht, kann durch eine $Stop Time$ bei 0,09s eine vorläufige Graphik erzeugt werden.\\
+Die deutlich elegantere Lösung stellt aber die Umstellung auf $Fixed-step$ und Step Size $auto$ dar.\\
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.8\textwidth, height = 180px]{6.3/6_3_e_oszibild.JPG}
+	\caption{Oszilloskopbild mit Type Fixed Step und size auto}
+\end{figure}
+Trotz der Maßnahmen kann die aufgeschaltete Sprungfunktion  noch nicht sauber angezeigt werden, da dafür die Abtastrate noch zu gering ist. 
+Ungeachtet dieser Problematik ist der Beginn des Sprunges $F_St(t)$ bei 0.1s und 10N deutlich erkennbar sowie die Antworten der verschieden Grafiken.
+\subsection{Modellierung und Simulation des MFDS durch I-Glieder}
+\begin{figure}[]
+	\centering
+	\includegraphics[width=.9\textwidth, height = 210px]{6.3/Modelle_step_auto_iglieder.JPG}
+	\caption{Simulink Modell mit I-Gliedern und Abgriff der gewünschten Größen}
+	\label{fig:oszoi}
+\end{figure}
+\begin{figure}[tbh] 
+	\centering
+	\includegraphics[width=.9\textwidth]{6.3/Oszimitvaraible_step_auto_iglieder.JPG}
+	\caption{Oszilloskopbild mit Type Variable-step und auto}
+	
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{6.3/Modelle_step_fix_10e-2_iglieder.JPG}
+	\caption{Oszilloskopbild mit Type Fixed Step und h~=~10$^{-2}$}
+	\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{6.3/Modelle_step_fix_10e-3_iglieder.JPG}
+	\caption{Oszilloskopbild mit Type Fixed Step und h~=~10$^{-3}$}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{6.3/Modelle_step_fix_10e-5_iglieder.JPG}
+	\caption{Oszilloskopbild mit Type Fixed Step und h~=~10$^{-5}$}
+\end{figure}
+Sofort wird der Vorteil von I-Gliedern, bzw. das große Problem von D-Gliedern sichtbar.
+Vor allem in Reihenschaltung können mit D-Gliedern die Stabilitätskriterien kaum eingehalten werden, wohingegen I-Glieder unproblematisch erscheinen.\\
+Zum Abgreifen der gesuchten Größen ist noch die Einführung eines D-Glieds notwendig, wie in Abb. \ref{fig:oszoi} auf S. \pageref{fig:oszoi} zeigt.\\
+Weitere Versuche werden wieder mit manueller Schrittweite h ausgeführt,
+mit den Werten h~=~10$^{-2}$s,10$^{-3}$s, 10$^{-5}$s. Deutlich ist die Glättung der Kurven sowie ein immer steilerer Anstieg des Sprungs zu erkennen. An den Grafiken ist erkennbar, dass die Auflösung mit h~=~10$^{-2}$s und manueller Schrittweite die besten Resultate liefert. Somit muss für die Auswertung ein guter Kompromiss gefunden werden zwischen der Anforderungen einer passenden Genauigkeit einerseits und der immens steigenden Rechenleistung und Zeit andererseits.
+\clearpage
+\section{Versuch 4: Bestimmung des Frequenzgangs eines unbekannten MFDS}
+Im folgenden Versuch soll, im Gegensatz zu Versuch drei, die Analyse eines bestehenden Systems durchgeführt werden.\\
+Eine unbekannte Strecke soll durch wenige, relativ einfache Versuche bestimmt werden und ihr Verhalten im Frequenzbereich ermittelt werden.
+\subsection{Simulink Modell des Masseschwingers}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{7.3/Model7_3_b_5s.JPG}
+	\caption{Simulink Modell mit Übertragungsfunktion}
+\end{figure}
+Das Masseschwinger Modell wird in Simulink nachgebildet und mit einem Frequenzgenerator erweitert.
+Als Test, ob das System überhaupt schwingen kann, wird eine Rechteckschwingung als Eingangsignal aufgeschaltet. Als Werte werden $F_St(t) \pm 10N$, $f=0,2Hz$ und $k_x=1$ verwendet. Für die Laufzeit werden die Zeitwerte einmal von 0s - 5s, sowie von 0s - 15s benutzt. In den Grafiken lässt sich leicht erkennen, dass die resultierenden Unter- und Oberschwinger gleich groß sind und diese auch im Laufe der Zeit konstant bleiben.
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{7.3/oszibild73b_5s.JPG}
+	\caption{Oszillatorbild von 0s - 5s und $k_x = 1$}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{7.3/oszibild73b_15_k_10.JPG}
+	\caption{Oszillatorbild von 0s - 15s und $k_x = 10$}
+\end{figure}
+Um die Darstellung weiter zu verbessern wird der Verstärkungsfaktor experimentell ermittelt und angepasst. Bei $k_x=20$ wird die Grafik deutlich anschaulicher, wie Abb. \ref{k} auf S. \pageref{k} zeigt.
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{7.3/oszibild73b_15_k_20.JPG}
+	\caption{Oszillatorbild von 0s - 15s und $k_x = 20$}
+	\label{k}
+\end{figure}
+Aus diesen Grafiken können mithilfe des $Measurements Tools$ und dem $Peak Finder$ sehr einfach die Werte der Über- und Unterschwinger festgestellt werden.
+\clearpage
+\subsection{Bestimmung des Dämpfungsgrads $\pmb\vartheta$}
+Mithilfe der folgenden Formeln können aus den aufbereiteten Grafiken die essentiellen Werte für die Beschreibung des Systems gewonnen werden:
+\[ ü_n = \frac{h_n-h_\infty}{h_\infty}\]
+\[ \lambda = ln\big|\frac{ü_1}{ü_2}\big| \]
+\[ \vartheta = \frac{1}{\sqrt{1+(\frac{\pi}{\lambda})^2}} \]
+\[ \omega_d = \frac{2\pi}{\tau} \]
+\[ \omega_0 = \frac{2\pi}{\tau} * \frac{1}{\sqrt{1-\vartheta^2}} \]
+Daraus werden die erforderlichen Werte berechnet und in Abb. \ref{werte} ausgegeben.
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.4\textwidth]{7.3/berechnung7d_5s.JPG}
+	\caption{Berechnete Werte aus der Sprungantwort des VZ2  Glieds}
+	\label{werte}
+\end{figure}
+\subsection{Bestimmung des Betrags- und Phasengangs des MFDS durch Simulation}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{7.3/bild7100_werte.JPG}
+	\caption{Simulation des MFDS für verschiedene $\omega$~Werte}
+	\label{ph}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{7.3/Table.JPG}
+	\caption{Ermittelte Werte der Simulation}
+\end{figure}
+In Aufgabe e) werden durch Simulationen des MFDS über verschiedene Kreisfrequenzen punktweise die Betrags- und Phasengänge bestimmt.\\
+Beispielhaftes Ausmessen der Werte in Abb. \ref{ph} auf S. \pageref{ph} zeigt das Vorgehen mit der Kreisfrequenz $\omega$~ = 1rad/s. Über eine Messfunktion von Simulink werden die X-Werte einfach abgelesen und notiert. Daraus können dann die weiteren Größen abgeleitet und berechnet werden.\\
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{7.3/Versuch4_AufgabeEbode.JPG}
+	\caption{Bode Diagramm aus ermittelten $\omega$ Werten}
+	%\label{ph}
+\end{figure}
+Das Auswerten der Sprungantwort und das Frequenzkennlinien Verfahren führen beide zu sehr ähnlichen Ergebnissen.
+Dennoch hat in der Praxis das Kennlinien Verfahren einige Vorteile. Es ist deutlich zuverlässiger und stabiler, unter anderem wegen des Verhaltens bei Klein- bzw. Großsignalen. Zusätzlich ist in der Realität das Aufschalten eines Einheitssprungs sehr problematisch durch die immense Belastung auf Bauteile. Konträr dazu können für verschiedene Frequenzgänge meist sehr einfach auf bestimmte Drehzahlen Sinusschwingungen aufmoduliert und ausgewertet werden.
+\clearpage
+\section{Versuch 5: Positionsregelung eines MFDS mit einschleifigen Reglern}
+In Versuch fünf wird eine komplette Regelung untersucht. Der Regelkreis wird aus unterschiedlichen Gliedern aufgebaut (P-, I, PI-Glied)~und durch Anwendung des Frequenzkennlinienverfahrens parametrisiert.\\
+Zunächst jedoch ein kurzer Exkurs in die Einstellung von Dämpfern und Regelungen.\\
+Die Einstellung eines Reglers orientiert sich an verschiedenen Anforderungen. Die BIBO Stabilität bedeutet, dass bei beschränkter Eingangsgröße die Ausgangsgröße nicht über alle Grenzen wachsen darf. Weiterhin ist stationäre Stabilität gefordert. Zugleich muss eine Störgröße beseitigt werden können, im besten Fall möglichst schnell.\\
+Ähnliche Kriterien treffen auch auf den gesamten Regelkreis zu. Stationär soll sich kein Fehler einstellen. Auch das Überschwingen soll begrenzt sein, insbesondere bei Positionsregelung, wo durch geeignete Maßnahmen ein Überschwingen komplett ausgeschlossen werden muss. Zusätzlich wird eine schnelle Anstiegszeit auf den geforderten Sollwertkorridor gefordert, oftmals ca. 5\% um den angestrebten Wert.\\
+Mit Matlab erfolgt die Erstellung eines Bode Diagramms mit einer gegebenen oder ermittelten Übertragungsfunktion mit denkbar einfachen Befehlen, siehe Abb. \ref{bod} auf S. \pageref{bod.}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.6\textwidth]{8.3/BodeBefehleMatlab.JPG}
+	\caption{Matlab Befehle für Bode Diagramm}
+	\label{bod}
+\end{figure}
+\subsection{Modellierung eines vollständigen Simulink Modells mit P-Glied}
+In den folgenden Versuchen wird auf den offenen, korrigierten Regelkreis zurückgegriffen, um das Bode Diagramm zu erstellen.\\
+Die Übertragungsfunktion $F_0$ ergibt sich aus dem geschlossenem Regelkreis durch Null setzten der Störgröße und auftrennen des Regelkreis vor dem Vergleichsglied ohne Regelglied. Damit ergibt sich die Übertragungsfunktion des offenen, korrigierten Regelkreis zu \mbox{$F_k$ = $G_R$*$F_0$}\\
+In Matlab ist es sehr einfach, durch geeignete Befehle aus $F_k$ das Bode Diagramm zu erstellen und zu vermessen.\\
+Der Verstärkungsfaktor $K_P$ kann durch auswerten der Oszilloskopbilder oder durch Vorgabe einer Phasenreserve im Bode Diagramm bestimmt werden.
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{8.3/Modellregelkreisollstandig.JPG}
+	\caption{Vollständiger Regelkreis mit P-Glied}
+	
+\end{figure}
+\begin{figure}[bh]
+	\centering
+	\includegraphics[width=.4\textwidth]{8.3/variable83.JPG}
+	\caption{Variablen zur Einstellung des Regelkreises}
+	\label{vari}
+\end{figure}
+In Abb. \ref{vari} auf S. \pageref{vari} sind die nötigen Variablen für den Regelkreis aufgeführt. Ziel der Aufgabe ist es, die Führungsgröße bei t = 0.1s von w = 0m auf w= 0.2m zu verändern.\\
+Im ersten Schritt soll durch Versuche ein sinnvoller Wert für $K_P$ ermittelt werden.
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth]{8.3/bildkpwert_55.JPG}
+	\caption{Oszilloskopbild zu $K_P$ = 5.5, ermittelt durch Bode Diagramm und Phasenreserve von 60 Grad}
+	%\label{vari}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth, height = 400px]{8.3/BodeDiagramdkp55.JPG}
+	\caption{Bode Diagramm für $K_P$ = 5.5 V/m und Phasenreserve von 60 Grad}
+	%\label{vari}
+\end{figure}
+Mit nur einem P-Regler zur Regelung des gegeben MFDS kristallisieren sich schnell einige Probleme heraus.\\
+Damit die Position entgegen der Gegenkraft gehalten werden kann, wird eine dauerhafte Kraft benötigt. Daraus folgt, dass der P-Regler immer eine kleine Abweichung benötigt, um Stellkraft erzeugen zu können. Die Möglichkeit zur Regelung belaufen sich dann auf eine Beeinflussung des Verhältnis zwischen Störung und Verstärkung.
+\clearpage
+\subsection{Modellierung eines vollständigen Simulink Modells mit I-Glied}
+Ähnlich zu dem reinen P-Glied kann auch hier der Verstärkungsfaktor $K_I$ versuchsweise aus dem Oszilloskopbild oder aus dem Bode Diagramm bei festgelegter Phasenreserve bestimmt werden.
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=1.0\textwidth]{8.3/ModellegelkreisollstandigI.JPG}
+	\caption{Vollständiger Regelkreis mit I-Glied und der Variablen $K_I$}
+	%\label{vari}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.95\textwidth, height = 270px]{8.3/BILD_K_I71.JPG}
+	\caption{Oszilloskopbild für $K_I$~= 7.1 V/ms und Phasenreserve von 60 Grad}
+	%\label{vari}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth, height = 350px]{8.3/BodeDiagramd_K_I7.JPG}
+	\caption{Bode Diagramm für $K_I$ = 7.1 V/ms und Phasenreserve von 60 Grad}
+	%\label{vari}
+\end{figure}
+\subsection{Vergleich Regelkreis P-Glied mit I-Glied}
+Die Regelkreise mit unterschiedlichen Gliedern unterscheiden sich in ihrem Verhalten stark voneinander.
+Mit P-Glied ist die Regelung deutlich schneller, ca. Faktor zwei- bis dreifach. Gleichzeitig bleibt jedoch das bereits thematisierte Problem der stationären Ungenauigkeit bestehen und auch beim Einregeln überschwingt der P-Regelkreis deutlich stärker. Dadurch ist es schwieriger, in den Zielkorridor zu kommen. Als Resultat ist auch der Regelfehler $e$ zeitlich und qualitativ unterschiedlich.
+\subsection{Modellierung eines vollständigen Simulink Modells mit PI-Glied}
+Die zwei Variablen für die PI-Regelung können natürlich wieder durch \glqq ausprobieren \grqq verschiedener Werte ermittelt werden.\\
+Sinnvollerweise wird jedoch ein methodischeres Verfahren angewendet.\\
+Im unkorrigiertem Regelkreis $F_0$ sind in den VZ1- und VZ2-Gliedern Zeitkonstanten enthalten. Durch eine geeignete Wahl der Zeitkonstanten kann eine Kompensation durchgeführt werden. Geeignet bedeutet an dieser Stelle, dass die größte Zeitkonstante ersetzt wird. Diese Kompensation ist mathematisch ein $Kürzen$ der Polstelle mit der Nullstelle. Dadurch sind die Zeitkonstanten festgelegt und die Verstärkungsfaktoren können wie in den Fällen zuvor durch eine geforderte Phasenreserve im Bode Diagramm sehr einfach festgestellt werden.
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth, height = 280 px]{8.3/Pi.JPG}
+	\caption{Vollständiger Regelkreis mit PI-Glied und den mit gegebener Übertragungsfunktion}
+	%\label{vari}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth, height = 280px]{8.3/BodeDiagramd_K_12_PItN01.JPG}
+	\caption{Bode Diagramm für $K_P$ = 1.2 und $T_N$ = 0.1s}
+	%\label{vari}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth,height = 280px]{8.3/Bild_K_12_PITN01.JPG}
+	\caption{Oszilloskopbild für $K_P$ = 1.2 und $T_N$ = 0.1s}
+	%\label{vari}
+\end{figure}
+\clearpage
+\subsection{Vergleich Regelkreis PI-Glied mit den Regelkreisen aus P-Glied und I-Glied}
+Der PI-Regler vereint die Vorteile beider Systeme, ohne deren Nachteile zu implementieren.\\
+Die Regelung ist zwar etwas langsamer als bei einer reinen P-Regelung, jedoch deutlich schneller als die I-Regelung.
+Das Überschwingen verschwindet komplett bei den eingestellten Werten von $T_N$ = 0.1s und $K_P$ = 1.2. Zusätzlich verschwindet der Offset Fehler, wodurch eine sehr präzise und robuste Regelung aufgebaut werden kann.\\
+Darauf basierend setzt sich die PI-Regelung in der Praxis immer weiter durch und kann als die Standardregelung schlechthin bezeichnet werden, die in sehr weiten Einsatzgebieten dominierend ist.
+\subsection{Modellierung eines PI-Regelkreises mit unterschiedlichen Störgrößen z}
+Die folgenden Aufgaben verlangen die Weiterentwicklung  des PI-Regelkreises mit aufgeschalteten, unterschiedlichen Störgrößen. Der Angriffspunkt ist vor dem MFDS, also bei der Stellgröße y(t). In einem gemeinsamen Oszilloskopbild werden die Störgröße z(t) und die Stellgröße y(t) angezeigt.\\
+Im ersten Fall, siehe Abb. \ref{z1} auf S. \pageref{z1}, greift eine periodische Störung mit 5s Periodendauer und dem Wert z = 1N an.\\
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=.9\textwidth, height = 250px]{8.3/modelStorgrose_k.JPG}
+	\caption{Regelkreis mit periodischer Störgröße z(t) und Periodendauer = 5s}
+	\label{z1}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=1\textwidth, height = 400px]{8.3/bildStorgrosek.JPG}
+	\caption{Oszilloskopbild mit periodischer Störgröße z(t) und Periodendauer = 5s}
+	\label{z5}
+\end{figure}
+Das Oszilloskopbild in Abb. \ref{z5} zeigt sehr deutlich, dass die Regelung die Störung stationär präzise und zeitlich hinreichend schnell ausregeln kann. Die geforderten Werte für die Ausgangsgrößen werden nach Einwirkung der Störung schnell und stabil wieder erreicht.\\
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=1\textwidth, height = 300px]{8.3/modellStorgroseI.JPG}
+	\caption{Regelkreis mit harmonischer Störgröße $\hat{z}$ = 0.5N und Frequenz = 0.5Hz}
+	%\label{z1}
+\end{figure}
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=1\textwidth, height = 450px]{8.3/bildStorgrosei.JPG}
+	\caption{Oszilloskopbild mit harmonischer Störgröße $\hat{z}$ = 0.5N und Frequenz = 0.5Hz}
+	\label{z2}
+\end{figure}
+Im Gegensatz dazu ist die Regelung mit der Stögröße $\hat{z}$, siehe Abb. \ref{z2} auf S. \pageref{z2} nicht mehr in der Lage, die Störgröße auszuregeln, die Werte schwanken zu stark. In der Praxis wird oft ein Zielkorridor von 5\% angestrebt, der im vorliegenden Fall nicht erreicht werden kann.\\
+Eine Möglichkeit zur Einhaltung der geforderten Toleranzen besteht darin, das Verhältnis von Störgröße zur Eingangsgröße zu erhöhen.
+Mit einer Vergrößerung des Verstärkungsfaktors, in unserem Fall auf $K_P$ = 2, kann die 5\% Toleranz knapp eingehalten werden. Übertrieben dargestellt wird der Fall in Abb. \ref{z3} auf S. \pageref{z3} mit $K_P$ = 5, wodurch die Regelung wieder sehr präzise wird, jedoch das ganze System instabil.\\
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=1\textwidth, height = 450px]{8.3/bildStorgroseimitkp5.JPG}
+	\caption{Oszilloskopbild mit übertriebener Ausregelung durch $K_P$ = 5}
+	\label{z3}
+\end{figure}
+\clearpage
+\subsection{Führungsübertragungs- und Störgrößenübertragungsfunktion}
+Im letzten Unterkapitel werden die Führungsübertragungsfunktion $F_w^{re}(s)$ und die Störübertragungsfunktion $F_z^{re}(s)$~ermittelt,
+Anschließend werden die zugehörigen Bode Diagramme über einen Matlab Befehl in einem Diagramm dargestellt.\\
+\begin{figure}[tbh]
+	\centering
+	\includegraphics[width=1\textwidth, height = 450px]{8.3/fuhurn_storung.JPG}
+	\caption{Bode Diagramm für Führungs- und Störgrößenübertragungsfunktion }
+	\label{w}
+\end{figure}
+Zwei typische Eigenschaften der Führungsübertragungsfunktion werden in dem Bode Diagramm in Abb. \ref{w} auf S. \pageref{w} deutlich.\\
+Wenn die Führungsübertragungsfunktion $|F_w^{re}(j\omega \rightarrow 0)|_{dB}~ \rightarrow 0 dB$ läuft, folgt dass der geschlossene Regelkreis bezüglich der Führungsgröße $w$~genau ist.\\
+Zusätzlich zeigt sich, dass bei der Bandbreite $|F_w^{re}(j\omega_b|_{dB}~ = |F_w^{re}(j\omega \rightarrow 0)|_{dB}~ \rightarrow -3 dB~\widehat{=}~70\%$, in unserem Fall mit $\omega_b$ =7.64 rad/s, typischerweise Tiefpassverhalten erfolgt, sichtbar durch die fallende Kurve von $F_w$.\\
+Zudem kann aus der Störübertragungsfunktion $F_z$~eine wichtige Aussage über die Auswirkung von Störungen getroffen werden. Falls das Bode Diagramm bei \mbox{$|F_z^{re}(j\omega \rightarrow 0)|_{dB}~ \rightarrow 0 dB$} fällt, folgt draus sofort, dass der geschlossene Regelkreis die stationären Störungen beseitigen kann, bzw. bezüglich der Störungen stationär genau ist. Die kritische Frequenz des Systems ergibt sich aus dem Maximum des Graphen. Dieses Maximum befindet sich immer in der Nähe von $\omega_0$. In der Praxis wird versucht, diesen Wert auf hohe Frequenz Bereiche zu verschieben, da durch die Abschwächung der Verstärkung die Auswirkungen fast verschwindet. 
+\section{Fazit}
+Im Laufe des Labortermins \glqq Regelungstechnik\grqq~an der Hochschule Pforzheim wurden die Grundlagen der Regelungstechnik erörtert, sowie eine Einführung in Matlab und Simulink mithilfe verschiedener Übungen gegeben.\\
+Durch die unglaubliche Mächtigkeit der Programme zeigt sich recht schnell, warum sie in der Praxis Stand der Technik sind.\\
+Aufgrund der verschiedenen Versuche wurden die dominierenden Themen der Theorie der Regeltechnik angeschnitten. Durch die gute Führung des Praktikums konnten schnell Erfolge erzielt werden und komplexe Übungen bearbeitet werden.\\
+Als Resultat bleibt festzuhalten, die zwei Tage Labor waren sehr spannend und informativ, die Neugier auf Regelungstechnik ist definitiv geweckt. Nichtsdestotrotz muss man sehr viel mehr Zeit und Energie investieren, um Aufgaben dieser Komplexität in der Praxis sicher und selbständig lösen zu können.
+ 
+
+
+\newpage
+\section{Eidestattliche Erklärung}
+\vspace{4cm}
+Ich versichere, dass ich das beiliegende Assignment selbstständig verfasst, keine anderen als die angegebene Quellen
+und Hilfsmittel benutzt sowie alle wörtlich oder sinngemäß übernommenen Stellen in der Arbeit gekennzeichnet habe\\
+\vspace{4cm}
+\hrule
+\vspace{0,4cm}
+(Ort, Datum)
+\hspace{9,5cm}
+(Unterschrift)
+
+\end{document}

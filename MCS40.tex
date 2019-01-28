@@ -1,0 +1,365 @@
+\documentclass[12pt,a4paper]{scrartcl}	% siehe <http://www.komascript.de>
+\usepackage{selinput}		% Eingabecodierung automatisch ermitteln …
+\SelectInputMappings{		% … siehe <http://ctan.org/pkg/selinput>
+	adieresis={ä},
+	germandbls={ß},
+}
+\usepackage[left=2.5cm,right=2cm, top=3cm, bottom=3cm]{geometry} %Maße Papier
+\usepackage[ngerman]{babel}% Das Beispieldokument ist in Deutsch,
+\usepackage[T1]{fontenc}   %erweitert Zeichenvorrat bei non E/US
+\usepackage{lmodern} 		%latein moderne Schriftzeichen
+\usepackage{amsmath}		%Mathe Bundle
+\usepackage{xcolor,graphicx}
+\usepackage[onehalfspacing]{setspace} %ermöglicht Zeilenabstand von 1.5 
+\usepackage{listings}
+\usepackage[%
+automark,
+headsepline,                %% Separation line below the header
+%  footsepline,               %% Separation line above the footer
+% markuppercase
+]{scrpage2}						%entspricht fanyhdr für KOMA, 
+\automark[subsection]{section} %
+\pagestyle{scrheadings}			%mit scrartcl und unterstrichenen Sections oben
+\usepackage{csquotes}
+\usepackage{subfigure} 
+
+\usepackage{url}
+
+\usepackage[backend=biber,style=authoryear,dashed=false]{biblatex}
+\addbibresource{Literatur.bib}
+\usepackage[pdftex]{hyperref} %muss letzte vor begin document sein
+\hypersetup{colorlinks,%
+	citecolor=black,%
+	filecolor=black,%
+	linkcolor=black,%
+	urlcolor=black}
+
+\begin{document}
+\begin{titlepage}
+%\frontmatter
+	\noindent{Roman Grabichler}\\
+	Immatrikulationsnummer:	2932203\\
+	Schmiedstrasse 5\\
+	83052 Bruckmühl\\
+	RoGrStudium@gmail.com\\
+	\vspace{5cm}
+	
+	\begin{center}
+		{\Huge \textbf{Assignment} }\\ 
+		Modul: MCS40\\
+		\vspace{1cm}
+		\textbf{Thema:}\\
+		\textbf{\large{Assignment Microcomputer Systeme (MCS40-LB)}}\\
+		\textbf{Wetterstation mit ESP8266 Server und Client}
+		
+	\end{center}
+	
+	\vspace{6cm}
+	Betreuer: Prof. Dr. Gerd Siegmund
+	\vfill Bruckmühl, 16.07.2018
+
+\end{titlepage}
+\newpage
+\tableofcontents
+\newpage
+\clearpage
+\thispagestyle{empty}
+\listoffigures
+\newpage
+
+\clearpage
+\thispagestyle{empty}
+%\listoffigures
+\newpage
+%\listoftables
+%\newpage
+
+\setcounter{page}{1}
+\section{Einleitung zu $\mu$C und Arduinos}
+Auf Wikipedia kann man lesen, $\mu$C sind Halbleiterchips, die einen Prozessor und Peripheriefunktionen besitzen und zusätzlich  mit Arbeits- und Programmierspeicher versehen sind.\\
+Weitere Definitionen in Fachbüchern erläutern $\mu$C als Verschaltung integrierter Schaltkreise auf engstem Raum \footcite[vgl.][S.1 \psq]{Bart}, versehen mit digitalen und analogen Eingängen zur Kommunikation nach außen\footcite[vgl.][S. 23]{Bruhl}. 
+Festzuhalten bleibt, in den sehr geringen Ausmaßen eines $\mu$C, im speziellen Arduino, ist sehr viel Leistung verpackt. Durch die zugängliche Entwicklungsumgebung, genannt Arduino IDE, kann sehr einfach und schnell drauflos programmiert werden.\\
+ Aus dieser Einfachheit, dem riesigen Bastelpotential und dem niedrigem Preis resultiert der Siegeszug des Arduino und seiner \glqq Verwandten\grqq .\\
+Ein $\mu$C unterscheidet sich von einem Mikroprozessor vor allem von seinen Zusatzmodulen. Durch den fließenden Übergang ist eine scharfe Abgrenzung jedoch kaum möglich\\
+$\mu$C werden häufig aufgrund ihrer Bit Anzahl des internen Datenbuss unterschieden. Geläufig sind 4, 8, 16 und 32 Bit Systeme. Zusätzlich muss noch die Taktung erwähnt werden. Es gibt externe Taktgeneratoren, Quarzoszillatoren oder interne Taktung. Die Frequenz reicht von einem MHz bis zu 100 MHz\footcite[vgl.][Abruf am 04.07.2018]{Mikro}.\\
+Dem Arduino liegt ein ATmega328 zugrunde als steuernder Mikrocontroller. Die Betriebsspannung liegt zwischen 3.3 V und 5V und der Arduino besitzt eine Taktfrequenz von 16MHz\footcite[vgl.][S. 28]{Bruhl}.\\
+Alle weiteren Details können aus dem Internet bezogen werden.
+\section{Wetterstation mit zwei ESP8266 Modulen, lokaler Anzeige auf TFT LCD und URL Anzeige}
+\subsection{Aufgabenstellung und Ziele}
+Die Zielsetzung des Moduls \glqq MSC40\grqq~stellt den Umgang mit $\mu$C in den Vordergrund. Durch die Wahl eines interessanten Projekts wird die Lust am ausprobieren und programmieren der einfach zu erlernenden Arduino IDE geschürt. Mit einfachen Mitteln sind so schnell sichtbare Erfolge und viele \glqq AHA\grqq~Momente erreichbar.\\
+Im vorliegenden Projekt soll das Ziel eine voll funktionsfähige Wetterstation sein. Die wichtigen Eckpunkte der selbst gestellten Aufgabe sind folgendermaßen.\\
+Eine Außenstation mit verschiedenen Sensoren, basierend auf einem ESP8266 Modul als Client, wird Daten über einen URL Aufruf an eine Innenstation, den Server übermitteln. Die Innenstation wird diese Daten einerseits für einen Browser Abruf in Handy oder PC im eigenen WLAN verfügbar machen, und andererseits auf einem Display anzeigen.
+Als Sensoren sind erstmals Temperatur, Feuchtigkeit und Druck angedacht, alles weitere ergibt sich aus dem Umfang der Arbeit. Die Anzeige im Browser ist beliebig erweiterbar und das Projekt soll als reale \glqq Wetterstation\grqq in meiner Wohnung dienen.
+\subsection{ESP8266 Modul und NodeMCU Board}
+Ein NodeMCU Entwicklungsboard vereint in einem kompakten Gehäuse ein unheimlich schnelles Controllerboard mit WLAN Funktionalität, das auf dem Chip ESP8266 beruht. Das Board ist günstig, verfügt über eine USB Schnittstelle und lässt sich einfach mit der Arduino IDE programmieren\footcite[vgl][Abruf am 05.07.2018]{node}.\\
+\\
+Der ESP8266 Chip bezeichnet ein in Bastler Kreisen sehr bekanntes WLAN Modul, das in verschiedenen Varianten und Bauformen angeboten wird\footcite[vgl][Abruf am 05.07.2018]{node}.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.35\textwidth,]{esp82.png}
+	%\caption*{}
+	%\label{w}
+\end{figure}
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.2\textwidth,]{esp.png}
+	\caption{ESP8266- 01 Chip }
+	%\label{w}
+\end{figure}
+Ein großer Vorteil dieser Boards ist, dass die Module selbst sehr leicht programmiert werden können. Das spart einerseits den Arduino ein und damit Geld, anderseits wird auch der Energieverbrauch spürbar geringer. Zusätzlich ist der ESP8266 Chip mit 80 MHz bzw. 160 MHz deutlich schneller als die meisten Arduino Boards. Die verschiedenen Varianten unterscheiden sich vor allem in der Anzahl an I/O Ports und dem internen Speicher. Gleich ist allen, dass sie mit der Arduino IDE unter Windows programmiert werden können\footcite[vgl][Abruf am 07.07.2018]{node}.\\
+\\
+Eigentlich ist das NodeMCU Board nur eine Erweiterung des ESP8266 Moduls, ähnlich dem Konzept Mikroprozessor und $\mu$C. Es gibt eine USB Schnittstelle und Spannungsstabilisierung, sowie eine Vereinheitlichung der I/O Ports.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.4\textwidth,]{node.png}
+	\caption{NodeMCU Board, basierend auf EPS8266 }
+	%\label{w}
+\end{figure}
+Die Programmierung wurde durch einige Maßnahmen sehr vereinfacht, vor allem durch die mögliche Benutzung durch die Arduino IDE. Damit sind so gut wie alle verfügbaren Komponenten mit den zugehörigen Bibliotheken benutzbar.\\
+Die Entscheidung, in diesem Projekt ein NodeMCU Board zu verwenden, ergibt sich vor allem durch die kleinen Ausmaße und einen sehr geringen Strombedarf. Dieser Verbrauch lässt sich durch einen Kunstgriff, den sogenannten \glqq DeepSleep Modus\grqq sogar noch deutlich reduzieren.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.5\textwidth,]{pin.png}
+	\caption{Pinbelegung des NodeMCU Boards (Quelle Google)}
+	\label{pin}
+\end{figure}
+In Abb. \ref{pin} wird noch die Pinbelegung dargelegt, die für das spätere Projekt relevant wird.\\
+Im folgenden wird kurz auf die notwendigen Einstellungen der Arduino IDE eingegangen, damit das NodeMCU Board verfügbar und programmierbar ist. Im vorliegenden Projekt wird die IDE Version 1.8.5 verwendend.\\
+In der Boardverwaltung muss ein Paket hinzugefügt werden. Im Menü \textbf{Datei} unter \textbf{Voreinstellung} im Eingabefeld \textbf{Zusätzliche Boardverwalter URL's} wird die folgende Adresse eingetragen.\\
+\url{http://arduino.esp8266.com/stable/package_esp8266com_index.json}\\
+Daraufhin kann im Menüpunkt \textbf{Werkzeuge} unter \textbf{Boardverwalter} der ESP8266 Chip ausgewählt werden. Nachfolgend muss das Board via USB mit dem PC verbunden werden und der richtige COM Port angewählt sein\footcite[vgl.][Abruf am 07.07.2018]{node}. Die Übertragung wird in diesem Fall auf 115200 Baud gestellt. Damit sind die Vorbereitungen abgeschlossen und der erste Test Sketch kann ausprobiert werden.
+\subsection{Erste Versuche mit TMP36GTZ9 Sensor und LCD1602 Anzeige}
+Im weiteren Verlauf wird der erste Versuchsaufbau beschrieben. Es werden die vorhandenen Komponenten des \glqq AKAD Baukasten\grqq~benutzt, um die Verbindung und Anzeige zu testen. Der TMP36GTZ9 liefert den Temperaturwert auf die LCD1602 Anzeige und zusätzlich werden die Daten im Browser angezeigt. Die Anzeige im Browser ist ohne Grafik Elemente, es geht erstmals nur um die Werte. Genauere Beschreibungen dazu folgen in den weiteren Kapiteln.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.3\textwidth,]{http.png}
+	\caption{HTTP Anzeige Wetterstation Gschlössl}
+	%label{pin}
+\end{figure}
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.5\textwidth,]{tmp.png}
+	\caption{Versuchsaufbau mit TMP Sensor und LCD  1602A Anzeige}
+	%label{pin}
+\end{figure}
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.3\textwidth,]{Kabel_firsttry.png}
+	\caption{Verkabelung Versuchsaufbau TMP Sensor und LCD Anzeige mit Fritzing}
+	%label{pin}
+\end{figure}
+Bisher ist nur die Teststation für Innen in Betrieb, daher der Außen Wert 0.\\
+Der Temperatur Sensor wird laut Datenblatt aus dem Internet angeschlossen. Wichtig ist die Einbeziehung des 500mV Temperatur Offsets. Die Verkabelung der LCD Anzeige wurde nach \glqq Bartmann \footcite{Bart}\grqq~erledigt und funktioniert einwandfrei mithilfe der LiquidCrystal Bibliothek Version 1.0.7.
+
+\section{Programmierung des ESP-Servers (Wetterinnenstation)}
+\subsection{Implementierung des DHT22 Sensors als Ersatz für den TMP}
+Da für die geplante Wetterstation ein weiterer Temperatur Sensor für die Außenstation notwendig ist, wurden Alternativen gesucht. Die Wahl fiel auf den sehr bekannten DHT22. Resultierend aus dem geringen Preis wird auch der TMP Sensor durch den DHT22 ersetzt, da zusätzlich ein Feuchtigkeitssensor dabei ist.\\
+Im Code wird die Library \textbf{DHT sensor library for ESP} Version 1.0.8 von beegee\_tokyo verwendet.
+Mit dem beigefügten Beispielprojekt ist es ein einfaches, den Sensor zu integrieren.
+\begin{lstlisting}
+	#include <DHTesp.h>
+	DHTesp dht;
+\end{lstlisting}
+In diesen zwei Zeilen wird die Library des DHT eingebunden und einer Variablen zugewiesen. Mit der folgenden Zeile wird der DHT Sensor dem verbundenen Pin zugewiesen und als DHT22 initialisiert.
+\begin{lstlisting}
+	dht.setup(D6, DHTesp::DHT22); 
+\end{lstlisting}
+Im Anschluss wird die Minimale Zeit Verzögerung für den nächsten Lese Vorgang abgewartet. Dafür wird die Zeile 
+\begin{lstlisting}
+	delay(dht.getMinimumSamplingPeriod());
+\end{lstlisting}
+benutzt. Für den DHT22 beträgt diese Zeit 2000MS. Mit den Befehlen 
+\begin{lstlisting}
+	float humidity = dht.getHumidity();
+	float temperature = dht.getTemperature();
+\end{lstlisting}
+wird die Temperatur und Feuchtigkeit des Sensors auf die gewünschten Variablen übertragen. Danach wird durch die Zeilen 
+\begin{lstlisting}
+	Serial.print(dht.getStatusString());
+	Serial.print("\t");
+	Serial.print(humidity, 1);
+	Serial.print("\t\t");
+	Serial.print(temperature, 1):
+\end{lstlisting}
+eine Ausgabe auf den Serial Monitor zum Testen programmiert. Dadurch können die Werte beobachtet werden. 
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.3\textwidth,]{tempDTH22.png}
+	\caption{LCD Anzeige mit DHT22 Sensor}
+	\label{tempdht22}
+\end{figure}
+Auf der Abb. \ref{tempdht22} wird die aktuelle Temperatur und Feuchtigkeit angezeigt, noch auf dem alten Display 1602A. Auf den Anschluss des LCD Displays wird nicht weiter eingegangen, da dieses Wissen als Grundlage für die bereits besuchten Seminare erforderlich war.\\
+
+\subsection{Erweiterung durch ein TFT LCD Module ILI9341 Drive IC}
+Der erste Testaufbau ist soweit erfolgreich abgeschlossen. Im Anschluss soll eine Upgrade für das Display her, um Farben und weitere Werte darstellen zu können. \\
+Beim stöbern auf Amazon fiel die Wahl auf das \textbf{TFT LCD Module ILI9341 Drive IC}, ein super funktionelles und dennoch sehr günstiges LCD Display.\\
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.20\textwidth,]{ILI9341.png}
+	\caption{Verkablung der LCD Anzeige ILI9341 mit dem ESP8266}
+	\label{ILI9341}
+\end{figure}
+In Abb. \ref{ILI9341} auf S. \pageref{ILI9341} wird die Verkabelung verdeutlicht.\\
+Notwendige Libraries sind einmal die \textbf{Adafruit GFX Library, Version 1.2.5} und die \textbf{Adafruit ILI9341 Version 1.0.12}. Mit dem Beispiel \textbf{graphicstest} von github\footcite[vgl.][Abruf am 16.07.2018]{ili}~konnte die Ansteuerung erfolgreich getestet werden.\\
+\\
+Bei der gemeinsamen Nutzung des neuen Displays ILI9341 und des DHT22 kamen überraschende, größere Probleme auf, die so nicht erwartet waren.\\
+Einerseits stellte das Löten der Komponenten eine große Herausforderung dar mit unzähligen Verbindungsprobleme, da kaum Löterfahrung vorhanden ist.
+Andererseits zeigte mir das zusammengebastelte Board auf einmal keine Temperatur Werte mehr an. Viel löten, messen und recherchieren brachte dann die Erkenntnis, es gibt Probleme mit den Digitalen Pins.
+In der Abb. \ref{ILI9341} auf S. \pageref{ILI9341} ist die Verkabelung gezeigt des Displays gezeigt. Beim Versuch, den Temperatur Sensor an einen der verbliebenen Digital Pins zu löten, wurden nie Werte angezeigt.\\
+Auf der Site\footcite[vgl.][Abruf am 19.07.2018]{i2c} \url{https://www.instructables.com/id/How-to-use-the-ESP8266-01-pins/} werden die Probleme erörtert und Lösungen aufgezeigt. Problematisch ist, dass viele GPIOs von dem Board selbst verwendend werden für unterschiedliche Zwecke, wie Flash \textbf{Connection}, \textbf{Serial transmission} oder \textbf{Sleep} Button. Verschiedene Lösungsansätze für den fehlenden digitalen Input werden aufgezeigt. Bei vielen fehlenden Ports als sinnvollste Variante stellt sich die Einbindung des I2C Protokolls dar.\\
+Da im vorliegenden Projekt nur ein Port benötigt wird, wurde die Variante bei \textbf{Step 4} angewandt. Damit wird aus GPIO0 und GPIO2 ein Eingangs Port, wenn der Pin GPIO0 als Output auf LOW gezogen wird.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.15\textwidth,]{display_final.jpg}
+	\caption{Display mit Werten des Servers und des Clients}
+	%\label{w}
+\end{figure}
+Das konnte glücklicherweise die auftretenden Schwierigkeiten beseitigen und die Programmierung schreitet voran.
+
+\subsection{Programmierung des ESP8266 als Server mit Browser Visualisierung }
+Es gibt verschiedene Möglichkeiten, um die WLAN Fähigkeiten des NodeMCUs zu verwenden. \\
+Im vorliegenden Projekt wird nachfolgenden Konstellation verwendet. Die Innenstation wird als Server fungieren und die Außenstation als Client. Der Server bekommt eine feste IP Adresse von der Fritzbox zugewiesen und empfängt über einen URL Aufruf die Werte der Außenstation\footcite[vgl.][Abruf am 30.07.2018]{node}. Der URL Aufruf hat die Form 
+\begin{center}
+	http://192.168.2.75/sensor/temperatur/?pw=passwortxyz\&nr=1\&wert=20  
+\end{center}
+Im hier beschriebenen Fall sind natürlich weitere Parameter vonnöten, um die Sensor Daten des Clients zu übertragen, doch dazu mehr im Kapitel \ref{comm} auf S. \pageref{comm}.\\
+\\
+Der erste Schritt besteht im Einbinden der ESP8266WIFI Library.
+\begin{figure}[htb]
+	%\centering
+	\includegraphics[width=0.6\textwidth,]{50.png}
+	%\caption*{}
+	%\label{w}
+\end{figure}
+Dann folgen die Daten des verfügbaren Netzwerks, SSID und Passwort. IP, Gateway und Subnet Adresse werden eingestellt und der Webserver wird in Zeile 61 gestartet.
+\begin{figure}[htb]
+	%\centering
+	\includegraphics[width=0.9\textwidth,]{55.png}
+	%\caption*{}
+	%\label{w}
+\end{figure}
+In Zeile 97 bis 155 wird die Funktion \textbf{handleValuesOutdoor} behandelt. Damit wird die Anzeige bei Aufruf der IP Adresse an PC oder Handy programmiert. Zusätzlich werden die empfangenen Sensor Daten des Außenstation angezeigt.
+\begin{figure}[htb]
+	%\centering
+	\includegraphics[width=0.90\textwidth,]{root.png}
+	%\caption*{}
+	%\label{w}
+\end{figure}
+\clearpage
+Exemplarisch wird in Zeile 101 die Übernahme des ersten Wertes des URL behandelt.
+\begin{center}
+	String stemp =server.arg(\glqq wert\grqq);
+\end{center}
+Die Zeile übernimmt den zugehörigen Wert und legt ihn als String in der Variablen \textbf{stemp} ab.
+Daraufhin wird mit dem Befehl
+\begin{center}
+	float temperaturOutdoor = stemp.toFloat();
+\end{center}
+wieder ein float Wert erzeugt. Mit einem \textbf{if Statement} wird abgefragt, ob dieser Wert neu ist und in der \textbf{tempFlagOutdoor} Variable gespeichert. Dieser Vorgang wiederholt sich für die weiteren Sensordaten Luftfeuchtigkeit und Luftdruck.\\
+Ab Zeile 131 wird die genaue Abfolge der Anzeige angegeben und mit den Sensorwerten der Außen- und Innenstation gefüllt. Die Zeile 154 erzeugt dann die Browser Ausgabe für handy oder PC.\\
+\\
+In der Funktion \textbf{void~setup} wird noch die Initialisierung der WIFI Connection vorgenommen.
+\begin{center}
+	WiFi.begin(ssid, pass);
+	WiFi.config(ip, gateway, subnet);
+\end{center}
+Mit dem Befehl 
+\begin{center}
+	 server.on("/sensor/temperatur/", handleValuesOutdoor);
+\end{center}
+wird die oben vorgestellte Funktion aufgerufen und ausgeführt.\\
+Damit ist der Server funktionsfähig. Er ist in ständiger Empfangsbereitschaft und bekommt durch den URL Aufruf die Daten des Clients übersendet. Als Resultat werden die Client- und Serverdaten im Browser und am Display angezeigt.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.70\textwidth,]{urlFInal.PNG}
+	\caption{Aufruf der IP Adresse im Browser}
+	%\label{w}
+\end{figure}
+
+\section{Programmierung des ESP-Clients (Wetteraußenstation)}
+Die Aufgabe der Außenstation besteht im sammeln und weiterleiten der Daten an eine Innenstation. Im vorliegenden Fall sollen Temperatur, Feuchtigkeit und Druck ausgelesen werden. Per URL Aufruf werden diese Werte an die Innenstation übergeben, wo sie auf einem Display angezeigt werden. Zusätzlich können diese Werte über einen URL Aufruf auch direkt am Handy oder PC angezeigt werden.\\
+Um die Batterie der Außenstation zu schonen, wird der Sleep Modus des ESP8266 verwendet. Somit werden die Werte nur in einem Turnus von 15 Minuten übermittelt.
+
+\subsection{Einfügen und Anzeigen weiterer Sensoren}
+Die Grundausstattung der Außenstation besteht aus einem DHT22 Sensor, gleich der Innenstation, für die Temperatur- und Feuchtigkeitsmessung.\\
+Zusätzlich soll eine Druckmessung erfolgen. Dafür fiel die Wahl auf einen \textbf{GY-68~BMP180} als Sensor. Als Library wird die Adafruit Lib. Version 1.0.0 BMP085/180 benutzt.
+Die Verkabelung erfolgt nach Anleitung in der Lib., mit SCL auf D2 und SDA auf D3.
+Mit dem Test Sketch können die Werte problemlos ausgelesen werden.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.65\textwidth,]{bmp.png}
+	\caption{Ausgabe Serial Monitor der angeschlossenen Sensoren}
+	\label{bmp}
+\end{figure}
+Die Ausgabe gibt in Abb. \ref{bmp} auf S. \pageref{bmp} die gemessenen Werte wieder. Die Temperatur Abweichung liegt im Rahmen der Toleranz. Die Seite des \glqq Metereologischen Instituts\grqq~in München zeigt einen Druckwert von 955.2 hPa in 515m, ein Wert, der dem gemessenen Wert in 512m sehr nahe kommt.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.75\textwidth,]{aussen_final.jpg}
+	\caption{Gelötete Außenstation mit DHT22 und BMP180 Sensor}
+\end{figure}
+Nun interessiert natürlich der relative Druck, also bezogen auf Meereshöhe, damit vergleichbare Werte erzielbar sind, wobei die barometrische Höhenformel erforderlich ist.
+\[p_{0}~=~ p(h)*\left( \frac{T(h)}{T(h)~+~0.0065h}\right)^{-5.255} \]
+Mit dieser Umrechnung kommt als Ergebnis ein Wert von 1013.96hPa heraus (aktuell 1014.1hPa bei \glqq Metereologischen Instituts\grqq \footcite[vgl.][Abruf am 25.07.2018]{meteor}).
+
+
+\subsection{Entwicklung eines Sketch für die Kommunikation mit dem Server über einen URL Aufruf} \label{comm}
+
+Um einen Kommunikation zwischen Client (Außensensor) und Server (Innensensor) zu starten, wird wieder auf die zahlreichen Beispiele der \textbf{ESP8266WiFi} zurückgegriffen. Das Beispiel \textbf{WIFIClient} zeigt schon einen Großteil des nötigen Codes. Mit der zusätzlichen Hilfe der bereits erwähnten Website\footcite[vgl.][Abruf am 27.07.2018]{node} und Anpassungen an die vorhandenen Sensoren kann schnell eine erste Verbindung erfolgreich getestet werden.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.35\textwidth,]{conn.png}
+	\caption{Verbindungstest zwischen Server und Client}
+ %	\label{bmp}
+\end{figure}
+Um die Verbindung mit dem Server zu gewährleisten, wird die Ziel IP Adresse des Servers eingetragen.
+\begin{center}
+	const char* host = \glqq 192.168.178.40\grqq;
+\end{center}
+\begin{figure}[htb]
+	%\centering
+	\includegraphics[width=0.7\textwidth,]{url.png}
+	%\caption{Verbindungstest zwischen Server und Client}
+	%	\label{bmp}
+\end{figure}
+Es folgt die Zusammensetzung der URL zur Übertragung der weiteren Sensordaten.
+In Zeile 168 bis 182 wird der methodische Aufbau der URL verdeutlicht. Nach der Abfrage des Passworts wird jeder Sensorwert mit einer Identifikationsnummer versehen. Damit ist die einfache Zuordnung der entsprechenden Daten am Server möglich.\\
+ Weitere Details, wie die Initialisierung der Verbindung, sind an die Beispiele der ESP8266 Library angelehnt und können dem beigefügten Quelltext entnommen werden. \\
+Nach erfolgreicher Übertragung der Daten wird der ESP8266 in den Schlafmodus versetzt, um Energie zu sparen. Bei nicht erfolgter Datenübertragung folgen weitere Versuche nach 60 Sekunden.
+Bei erfolgter Übertragung schaut die Ausgabe des \textbf{Serial Monitor} folgendermaßen aus.
+\begin{figure}[htb]
+	%\centering
+	\includegraphics[width=1\textwidth, height=300px]{SerialAusgabeFinish.PNG}
+%	\caption{Ausgabe \glqq Serial Monitor\grqq bei erfolgreicher Übertragung}
+	%\label{monitor}
+\end{figure}
+
+
+\section{Ergebnisse der Wetterstation und kritische Auseinandersetzung} 
+Das Thema \glqq Wetterstation\grqq~ist per Definition erstmal nicht eingegrenzt.\\
+Da für das Assignment aber ein angemessener Rahmen gefunden werden musste, ist es notwendig, auf gewisse Details oder Ausarbeitungen zu verzichten. Daher ist die vorliegende Wetterstation nur als Prototyp zu sehen und die resultierende Beschreibung nur ein Ausschnitt aus den vielen Möglichkeiten.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.90\textwidth,]{final.png}
+	\caption{Finale Versionen mit gedruckten Gehäuse und Referenz}
+	%\label{monitor}
+\end{figure}
+Weitere mögliche und interessante Entwicklungen bestehen im hinzufügen zahlloser, zusätzlicher Sensoren. Denkbar ist das Messen von Windgeschwindigkeiten, Lichteinfall, Luft Zusammensetzung und vieles mehr.\\
+Weiteres Potential zum Upgrade liegt in der Darstellung und Speicherung von Graphen. Dazu gibt es unzählige spannen
+de Projekte im Internet, die aufzeigen, was in diese Richtung mit IOT alles möglich ist. Damit ist auch ein nicht limitierter Zugriff über \textbf{http} möglich.\\
+Ein weiterer wichtiger Aspekt, gerade im Hinblick auf den Praxis Einsatz, ist die fortlaufende Optimierung des Strombedarfs. Durch eine darauf ausgelegt Auswahl der Komponenten und Sensoren ist dahingehend sicher noch sehr viel Potential vorhanden. Dabei ist auch die Wahl des WIFI Moduls zu überdenken. Eine Alternative ist z.B. die Umsetzung mit Mikrofunk und dem RFM12B Modul, um die Kommunikation mit der Außenstation zu bewerkstelligen.\\
+Ein Schritt weiter in dieser Richtung ist die Idee, mit einer Photovoltaik Zelle den Akku täglich neu zu laden, und somit die Außenstation völlig autark zu machen.\\
+\section{Fazit}
+Die Erstellung der Wetterstation war eine sehr interessante und herausfordernde Aufgabe.\\
+Aufgrund der aufgetretenen Schwierigkeiten musste ich mich deutlich tiefer mit der Programmierung, dem NodeMCU Board und der Sensorwahl beschäftigen als gedacht .\\
+\\
+Dennoch ist durch die freie Themenwahl, die ansprechende Programmierung mit der Arduino IDE und den schnell sichtbaren, \glqq physischen\grqq~Ergebnissen dieses Modul ein absolutes Highlight.\\
+Persönlich will ich die Wetterstation auf jeden Fall noch weiter ausbauen und für den sinnvollen Heimgebrauch fit machen.\\
+\\
+Kritisch anzumerken bleibt dabei die Tatsache, dass durch die zahllosen Möglichkeiten und Optionen des Projekts teilweise die Stringenz der Arbeit etwas auf der Strecke bleibt. Da sich immer wieder neue Probleme und Schwierigkeiten auftaten, mussten interessante Themen etwas in den Hintergrund weichen, damit die Arbeit in einem akzeptablen Rahmen bleibt, da ich nicht nur Teilaspekte vorstellen will, sondern dass ganze Projekt inklusive der fertige Wetterstation als Resultat.
+\newpage
+
+\printbibliography
+
+
+
+\end{document}
